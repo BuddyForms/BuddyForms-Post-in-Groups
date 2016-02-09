@@ -12,7 +12,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
       global $buddyforms;
 
       $this->post_in_group_form_slug	= groups_get_groupmeta( bp_get_current_group_id(), '_bf_pig_form_slug', true );
-      $this->buddyforms_pig           =  groups_get_groupmeta( bp_get_current_group_id(), '_buddyforms_pig', true );
+      $this->buddyforms_pig           = groups_get_groupmeta( bp_get_current_group_id(), '_buddyforms_pig', true );
       $this->buddyforms_user_can	    = false;
       $this->enable_create_step       = false;
 
@@ -119,10 +119,8 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
           }
 
           $query_args =  apply_filters('bf_post_to_display_args',$query_args);
-
           $the_lp_query = new WP_Query( $query_args );
-
-            buddyforms_locate_template('buddyforms/the-loop.php');
+          buddyforms_locate_template('buddyforms/the-loop.php');
 
           // Support for wp_pagenavi
           if(function_exists('wp_pagenavi')){
@@ -137,7 +135,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
     }
 
     function bp_pig_after_group_manage_members_admin(){
-      global $bp;
+      global $buddyforms, $bp;
 
       $group_id = bp_get_group_id();
 
@@ -145,9 +143,14 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
         $group_id = $bp->groups->new_group_id;
 
 
-      echo '$group_id'.$group_id;
-      $form_slug = groups_get_groupmeta( $group_id, '_bf_pig_form_slug' ); ?>
-      Select The Form  <input type="text" name="_bf_pig_form_slug" value="<?php echo esc_attr( $form_slug ) ?>" />
+      $form_slug = groups_get_groupmeta( $group_id, '_bf_pig_form_slug' );?>
+      <h2><?php _e( 'Post in Group Options', 'buddyforms' ) ?></h2>
+      <select name="_bf_pig_form_slug">
+         <option value="none"><?php _e('Select Form', 'buddyforms') ?></option>
+        <?php foreach ($buddyforms as $key => $buddyform) { ?>
+          <option <?php selected($key, $form_slug) ?> value="<?php echo $key ?>"><?php echo $buddyform['name'] ?></option>
+        <?php } ?>
+      </select>
       <?php
 
       $settings	= groups_get_groupmeta( $group_id, '_buddyforms_pig' );
@@ -157,8 +160,6 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
       $can_delete  = empty( $settings['delete'] ) ? false : $settings['delete'];
 
       ?>
-
-      <h2><?php echo $this->name; ?> <?php _e( 'Options', 'buddyforms' ) ?></h2>
 
       <div id="_buddyforms_pig-options" <?php if ( $form_slug ) : ?>class="hidden"<?php endif ?>>
 
