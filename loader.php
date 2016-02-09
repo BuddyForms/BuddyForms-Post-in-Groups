@@ -87,6 +87,10 @@ function buddyforms_post_in_groups(){
         );
         add_action('bp_after_group_settings_admin', array($this, 'bp_pig_after_group_manage_members_admin'), 1, 1);
         add_action('groups_group_settings_edited' , array($this, 'bf_pig_groups_group_settings_edited'), 10, 1 );
+        add_action('bp_after_group_settings_creation_step', array($this, 'bp_pig_after_group_manage_members_admin'), 1, 1);
+        add_action('groups_create_group_step_save_group-settings' , array($this, 'bf_pig_groups_group_settings_edited'), 10, 1 );
+
+
         parent::init( $args );
       }
 
@@ -182,6 +186,10 @@ function buddyforms_post_in_groups(){
 
         $group_id = bp_get_group_id();
 
+        if(!$group_id)
+          $group_id = $bp->groups->new_group_id;
+
+
         echo '$group_id'.$group_id;
         $form_slug = groups_get_groupmeta( $group_id, '_bf_pig_form_slug' ); ?>
         Select The Form  <input type="text" name="_bf_pig_form_slug" value="<?php echo esc_attr( $form_slug ) ?>" />
@@ -246,6 +254,11 @@ function buddyforms_post_in_groups(){
         <?php
       }
       function bf_pig_groups_group_settings_edited($group_id){
+        global $bp;
+        
+        if(!$group_id)
+          $group_id = $bp->groups->new_group_id;
+
         if(isset($_POST['_bf_pig_form_slug'])){
           $form_slug = isset( $_POST['_bf_pig_form_slug'] ) ? $_POST['_bf_pig_form_slug'] : '';
           groups_update_groupmeta( $group_id, '_bf_pig_form_slug', $form_slug );
