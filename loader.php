@@ -38,3 +38,8 @@ function buddyforms_pig_init() {
 
 }
 add_action('bp_loaded', 'buddyforms_pig_init');
+
+function buddyforms_pig_admin_init(){
+  require (dirname(__FILE__) . '/includes/admin/admin.php');
+}
+add_action('admin_init', 'buddyforms_pig_admin_init');

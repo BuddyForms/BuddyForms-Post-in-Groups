@@ -11,42 +11,45 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
     function __construct() {
       global $buddyforms;
 
-      $this->post_in_group_form_slug	= groups_get_groupmeta( bp_get_current_group_id(), '_bf_pig_form_slug', true );
+      $this->post_in_group_form_slugs	= groups_get_groupmeta( bp_get_current_group_id(), '_bf_pig_form_slug', true );
       $this->buddyforms_pig           = groups_get_groupmeta( bp_get_current_group_id(), '_buddyforms_pig', true );
       $this->buddyforms_user_can	    = false;
       $this->enable_create_step       = false;
 
-      $name = $buddyforms[$this->post_in_group_form_slug]['name'];
+      foreach ($this->post_in_group_form_slugs as $key => $form_slug) {
+        $name = $buddyforms[$form_slug]['name'];
 
-			if ( isset( $this->buddyforms_pig['create'] ) ) {
-				switch ( $this->buddyforms_pig['create'] ) {
-					case 'admin' :
-						if ( groups_is_user_admin( bp_loggedin_user_id(), bp_get_current_group_id() ) )
-							$this->buddyforms_user_can = true;
-						break;
-					case 'mod' :
-						if ( groups_is_user_mod(bp_loggedin_user_id(), bp_get_current_group_id()) || groups_is_user_admin(bp_loggedin_user_id(), bp_get_current_group_id()) )
-							$this->buddyforms_user_can = true;
-						break;
-					case 'member' :
-					default :
-						if ( groups_is_user_member(bp_loggedin_user_id(), bp_get_current_group_id()) )
-							$this->buddyforms_user_can = true;
-						break;
-				}
-			}
-      $args = array(
-          'slug' => $this->post_in_group_form_slug,
-          'name' => $name,
-          'nav_item_position' => 105,
-      );
-      add_action('bp_after_group_settings_admin', array($this, 'bp_pig_after_group_manage_members_admin'), 1, 1);
-      add_action('groups_group_settings_edited' , array($this, 'bf_pig_groups_group_settings_edited'), 10, 1 );
-      add_action('bp_after_group_settings_creation_step', array($this, 'bp_pig_after_group_manage_members_admin'), 1, 1);
-      add_action('groups_create_group_step_save_group-settings' , array($this, 'bf_pig_groups_group_settings_edited'), 10, 1 );
+        if ( isset( $this->buddyforms_pig['create'] ) ) {
+          switch ( $this->buddyforms_pig['create'] ) {
+            case 'admin' :
+              if ( groups_is_user_admin( bp_loggedin_user_id(), bp_get_current_group_id() ) )
+                $this->buddyforms_user_can = true;
+              break;
+            case 'mod' :
+              if ( groups_is_user_mod(bp_loggedin_user_id(), bp_get_current_group_id()) || groups_is_user_admin(bp_loggedin_user_id(), bp_get_current_group_id()) )
+                $this->buddyforms_user_can = true;
+              break;
+            case 'member' :
+            default :
+              if ( groups_is_user_member(bp_loggedin_user_id(), bp_get_current_group_id()) )
+                $this->buddyforms_user_can = true;
+              break;
+          }
+        }
+        $args = array(
+            'slug' => $form_slug,
+            'name' => $name,
+          //  'nav_item_position' => 105,
+        );
+        add_action('bp_after_group_settings_admin', array($this, 'bp_pig_after_group_manage_members_admin'), 1, 1);
+        add_action('groups_group_settings_edited' , array($this, 'bf_pig_groups_group_settings_edited'), 10, 1 );
+        add_action('bp_after_group_settings_creation_step', array($this, 'bp_pig_after_group_manage_members_admin'), 1, 1);
+        add_action('groups_create_group_step_save_group-settings' , array($this, 'bf_pig_groups_group_settings_edited'), 10, 1 );
 
 
-      parent::init( $args );
+        parent::init( $args );
+      }
+
     }
 
     function display( $group_id = NULL ) {
@@ -143,14 +146,19 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
         $group_id = $bp->groups->new_group_id;
 
 
-      $form_slug = groups_get_groupmeta( $group_id, '_bf_pig_form_slug' );?>
+      $form_slug = groups_get_groupmeta( $group_id, '_bf_pig_form_slug' );
+
+print_r($form_slug);
+      ?>
       <h2><?php _e( 'Post in Group Options', 'buddyforms' ) ?></h2>
-      <select name="_bf_pig_form_slug">
-         <option value="none"><?php _e('Select Form', 'buddyforms') ?></option>
-        <?php foreach ($buddyforms as $key => $buddyform) { ?>
-          <option <?php selected($key, $form_slug) ?> value="<?php echo $key ?>"><?php echo $buddyform['name'] ?></option>
-        <?php } ?>
-      </select>
+      <label for="_bf_pig_form_slug"><?php _e( 'Select the forms you like to integrate', 'buddyforms' ) ?></label>
+
+      <?php foreach ($buddyforms as $key => $buddyform) { ?>
+
+        <input type="checkbox" name="_bf_pig_form_slug[<?php echo $key ?>]" <?php checked($key, $form_slug) ?> value="<?php echo $key ?>"> <?php echo $buddyform['name'] ?><br>
+
+      <?php } ?>
+
       <?php
 
       $settings	= groups_get_groupmeta( $group_id, '_buddyforms_pig' );
@@ -216,7 +224,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
         $group_id = $bp->groups->new_group_id;
 
       if(isset($_POST['_bf_pig_form_slug'])){
-        $form_slug = isset( $_POST['_bf_pig_form_slug'] ) ? $_POST['_bf_pig_form_slug'] : '';
+        $form_slug = isset( $_POST['_bf_pig_form_slug'] ) ? $_POST['_bf_pig_form_slug'] : array();
         groups_update_groupmeta( $group_id, '_bf_pig_form_slug', $form_slug );
       }
       if(isset($_POST['_bf_pig_form_slug'])){
