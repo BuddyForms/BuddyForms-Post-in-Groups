@@ -11,12 +11,15 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
     function __construct() {
       global $buddyforms;
 
-      $this->post_in_group_form_slugs	= groups_get_groupmeta( bp_get_current_group_id(), '_bf_pig_form_slug', true );
+      $this->post_in_group_form_slug	= groups_get_groupmeta( bp_get_current_group_id(), '_bf_pig_form_slug', true );
       $this->buddyforms_pig           = groups_get_groupmeta( bp_get_current_group_id(), '_buddyforms_pig', true );
       $this->buddyforms_user_can	    = false;
       $this->enable_create_step       = false;
 
-      foreach ($this->post_in_group_form_slugs as $key => $form_slug) {
+      $form_slug = $this->post_in_group_form_slug;
+
+
+//      foreach ($this->post_in_group_form_slug as $key => $form_slug) {
         $name = $buddyforms[$form_slug]['name'];
 
         if ( isset( $this->buddyforms_pig['create'] ) ) {
@@ -48,7 +51,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 
 
         parent::init( $args );
-      }
+  //    }
 
     }
 
@@ -153,11 +156,13 @@ print_r($form_slug);
       <h2><?php _e( 'Post in Group Options', 'buddyforms' ) ?></h2>
       <label for="_bf_pig_form_slug"><?php _e( 'Select the forms you like to integrate', 'buddyforms' ) ?></label>
 
-      <?php foreach ($buddyforms as $key => $buddyform) { ?>
+      <select name="_bf_pig_form_slug">
+         <option value="none"><?php _e('Select Form', 'buddyforms') ?></option>
+        <?php foreach ($buddyforms as $key => $buddyform) { ?>
+          <option <?php selected($key, $form_slug) ?> value="<?php echo $key ?>"><?php echo $buddyform['name'] ?></option>
+        <?php } ?>
+      </select>
 
-        <input type="checkbox" name="_bf_pig_form_slug[<?php echo $key ?>]" <?php checked($key, $form_slug) ?> value="<?php echo $key ?>"> <?php echo $buddyform['name'] ?><br>
-
-      <?php } ?>
 
       <?php
 
@@ -224,7 +229,7 @@ print_r($form_slug);
         $group_id = $bp->groups->new_group_id;
 
       if(isset($_POST['_bf_pig_form_slug'])){
-        $form_slug = isset( $_POST['_bf_pig_form_slug'] ) ? $_POST['_bf_pig_form_slug'] : array();
+        $form_slug = isset( $_POST['_bf_pig_form_slug'] ) ? $_POST['_bf_pig_form_slug'] : '';
         groups_update_groupmeta( $group_id, '_bf_pig_form_slug', $form_slug );
       }
       if(isset($_POST['_bf_pig_form_slug'])){
