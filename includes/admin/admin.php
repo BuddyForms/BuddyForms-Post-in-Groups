@@ -7,6 +7,7 @@ function bf_pig_admin_tabs($tabs){
 add_filter('bf_admin_tabs', 'bf_pig_admin_tabs', 10, 1);
 
 function buddyforms_pig_settings_page_tab($tab){
+  global $buddyforms;
   if($tab == 'buddypress-pig'){
 
 
@@ -14,6 +15,10 @@ function buddyforms_pig_settings_page_tab($tab){
        update_option( 'buddyforms_pig_options', $_POST['buddyforms_pig_options'] );
     }
     $buddyforms_pig 	= get_option( 'buddyforms_pig_options' );
+
+    // echo '<pre>';
+    // print_r($buddyforms_pig);
+    // echo '</pre>';
 
     ?>
 
@@ -27,14 +32,29 @@ function buddyforms_pig_settings_page_tab($tab){
             <tr valign="top">
                 <th scope="row" valign="top">
                     <?php _e('Enable Post in Groups'); ?>
+                    <?php _e('How is alowed to enable the Post in Groups Feature in a Grop'); ?>
                 </th>
                 <td>
                   <select name="buddyforms_pig_options[permission]" class="regular-radio">
-                      <option value="none">None</option>
+                      <option value="none">Disabled</option>
                       <option <?php echo selected($buddyforms_pig['permission'], 'all', true) ?>
-                        value="all">All</option>
-                        <option <?php echo selected($buddyforms_pig['permission'], 'all2', true) ?>
-                          value="all2">All2</option>
+                        value="all">All Users</option>
+                      <option <?php echo selected($buddyforms_pig['permission'], 'admin', true) ?>
+                        value="all2">Admins Only</option>
+                  </select>
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row" valign="top">
+                    <?php _e('Select the Forms you like to make available as Group Forms'); ?>
+                </th>
+                <td>
+                  <select name="buddyforms_pig_options[forms][]" multiple="multiple" class="bf-select2 regular-radio">
+                      <?php foreach ($buddyforms as $form_slug => $buddyform) { ?>
+                        <option  <?php echo in_array($form_slug, $buddyforms_pig['forms']) ? 'selected' : '' ?>
+                          value="<?php echo $form_slug ?>"><?php echo $buddyform['name'] ?></option>
+                      <?php } ?>
+
                   </select>
                 </td>
             </tr>
