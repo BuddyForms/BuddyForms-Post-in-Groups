@@ -12,7 +12,12 @@ Post in Groups
 
 == Description ==
 
-Hallo
+This is the BuddyForms Post in Groups extension. You need the BuddyForms plugin installed for the plugin to work. <a href="http://buddyforms.com" target="_blank">Get BuddyForms now!</a>
+
+Let your users post in Groups.
+Assign a BuddyPress form with a form and let your users write in this group.
+You can define the user rights in the settings.
+
 
 <h4>Documentation & Support</h4>
 
