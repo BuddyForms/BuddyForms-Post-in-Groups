@@ -16,6 +16,10 @@ function buddyforms_pig_settings_page_tab($tab){
     }
     $buddyforms_pig 	= get_option( 'buddyforms_pig_options' );
 
+    $forms = array();
+    if(isset($buddyforms_pig['forms']))
+      $forms = $buddyforms_pig['forms'];
+
     // echo '<pre>';
     // print_r($buddyforms_pig);
     // echo '</pre>';
@@ -32,7 +36,7 @@ function buddyforms_pig_settings_page_tab($tab){
             <tr valign="top">
                 <th scope="row" valign="top">
                     <?php _e('Enable Post in Groups'); ?>
-                    <?php _e('How is alowed to enable the Post in Groups Feature in a Grop'); ?>
+                    <?php _e('How is alowed to enable the Post in Groups Feature in a Group'); ?>
                 </th>
                 <td>
                   <select name="buddyforms_pig_options[permission]" class="regular-radio">
@@ -51,7 +55,7 @@ function buddyforms_pig_settings_page_tab($tab){
                 <td>
                   <select name="buddyforms_pig_options[forms][]" multiple="multiple" class="bf-select2 regular-radio">
                       <?php foreach ($buddyforms as $form_slug => $buddyform) { ?>
-                        <option  <?php echo in_array($form_slug, $buddyforms_pig['forms']) ? 'selected' : '' ?>
+                        <option  <?php echo in_array($form_slug, $forms) ? 'selected' : '' ?>
                           value="<?php echo $form_slug ?>"><?php echo $buddyform['name'] ?></option>
                       <?php } ?>
 

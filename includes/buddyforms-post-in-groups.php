@@ -143,26 +143,28 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
     function bp_pig_after_group_manage_members_admin(){
       global $buddyforms, $bp;
 
+      $buddyforms_pig 	= get_option( 'buddyforms_pig_options' );
+
+      if(!isset($buddyforms_pig['forms']))
+        return;
+
       $group_id = bp_get_group_id();
 
       if(!$group_id)
         $group_id = $bp->groups->new_group_id;
 
 
-      $form_slug = groups_get_groupmeta( $group_id, '_bf_pig_form_slug' );
+      $form_slug = groups_get_groupmeta( $group_id, '_bf_pig_form_slug' ); ?>
 
-print_r($form_slug);
-      ?>
       <h2><?php _e( 'Post in Group Options', 'buddyforms' ) ?></h2>
       <label for="_bf_pig_form_slug"><?php _e( 'Select the forms you like to integrate', 'buddyforms' ) ?></label>
 
       <select name="_bf_pig_form_slug">
          <option value="none"><?php _e('Select Form', 'buddyforms') ?></option>
-        <?php foreach ($buddyforms as $key => $buddyform) { ?>
-          <option <?php selected($key, $form_slug) ?> value="<?php echo $key ?>"><?php echo $buddyform['name'] ?></option>
+        <?php foreach ($buddyforms_pig['forms'] as $key => $slug) { ?>
+          <option <?php selected($slug, $form_slug) ?> value="<?php echo $slug ?>"><?php echo $buddyforms[$slug]['name'] ?></option>
         <?php } ?>
       </select>
-
 
       <?php
 
@@ -232,7 +234,7 @@ print_r($form_slug);
         $form_slug = isset( $_POST['_bf_pig_form_slug'] ) ? $_POST['_bf_pig_form_slug'] : '';
         groups_update_groupmeta( $group_id, '_bf_pig_form_slug', $form_slug );
       }
-      if(isset($_POST['_bf_pig_form_slug'])){
+      if(isset($_POST['_buddyforms_pig'])){
         $settings = !empty( $_POST['_buddyforms_pig'] ) ? $_POST['_buddyforms_pig'] : array();
         groups_update_groupmeta( $group_id, '_buddyforms_pig', $settings );
       }

@@ -34,13 +34,84 @@ function buddyforms_post_in_groups_locate_template($file) {
 }
 
 function buddyforms_pig_the_loop_actions($post_id){
-  $group_permalink = bp_get_group_permalink() . bp_current_action();
+  $group_id = bp_get_group_id();
 
-  if (get_the_author_meta('ID') ==  get_current_user_id())
+  if(!$group_id)
     return;
 
-  $post_status = get_post_status($post_id);
+  if(!is_user_logged_in())
+    return;
 
+  $group_id       = bp_get_group_id();
+  //$buddyforms_pig = get_option( 'buddyforms_pig_options' );
+
+  $can_edit   = false;
+  $can_delete = false;
+
+  $settings	= groups_get_groupmeta( $group_id, '_buddyforms_pig' );
+
+  switch ($settings['edit']) {
+    case 'admin':
+        if( groups_is_user_admin(get_current_user_id(), $group_id) ){
+          $can_edit = true;
+        }
+      break;
+    case 'mod':
+        if( groups_is_user_mod(get_current_user_id(), $group_id) ){
+          $can_edit = true;
+        }
+        if( groups_is_user_admin(get_current_user_id(), $group_id) ){
+          $can_edit = true;
+        }
+      break;
+    case 'member':
+        if( groups_is_user_member(get_current_user_id(), $group_id) ){
+          $can_edit = true;
+        }
+        if( groups_is_user_mod(get_current_user_id(), $group_id) ){
+          $can_edit = true;
+        }
+        if( groups_is_user_admin(get_current_user_id(), $group_id) ){
+          $can_edit = true;
+        }
+      break;
+  }
+
+  switch ($settings['delete']) {
+    case 'admin':
+        if( groups_is_user_admin(get_current_user_id(), $group_id) ){
+          $can_delete = true;
+        }
+      break;
+    case 'mod':
+        if( groups_is_user_mod(get_current_user_id(), $group_id) ){
+          $can_delete = true;
+        }
+        if( groups_is_user_admin(get_current_user_id(), $group_id) ){
+          $can_delete = true;
+        }
+      break;
+    case 'member':
+        if( groups_is_user_member(get_current_user_id(), $group_id) ){
+          $can_delete = true;
+        }
+        if( groups_is_user_mod(get_current_user_id(), $group_id) ){
+          $can_delete = true;
+        }
+        if( groups_is_user_admin(get_current_user_id(), $group_id) ){
+          $can_delete = true;
+        }
+      break;
+  }
+
+  if (get_the_author_meta('ID') ==  get_current_user_id()){
+    $can_delete = true;
+    $can_edit   = true;
+  }
+
+
+  $group_permalink = bp_get_group_permalink() . bp_current_action();
+  $post_status = get_post_status($post_id);
   $post_status_css =  $post_status_name  = $post_status;
 
   if( $post_status == 'pending')
@@ -52,10 +123,13 @@ function buddyforms_pig_the_loop_actions($post_id){
   ?>
   <div class="action">
     <div class="meta">
-      <div class="item-status"><?php echo $post_status_name; ?></div>
-      <?php
-      echo '<a title="Edit" id="' . $post_id . '" class="bf_edit_post" href="' . $group_permalink . '/edit/' . $post_id . '">' . __( 'Edit', 'buddyforms' ) .'</a>';
-      echo ' - <a title="Delete"  id="' . $post_id . '" class="bf_delete_post" href="#">' . __( 'Delete', 'buddyforms' ) . '</a>';
+      <?php if(!($can_edit == false && $can_delete == false)){ ?>
+          <div class="item-status"><?php echo $post_status_name; ?></div>
+      <?php }
+      if($can_edit)
+        echo '<a title="Edit" id="' . $post_id . '" class="bf_edit_post" href="' . $group_permalink . '/edit/' . $post_id . '">' . __( 'Edit', 'buddyforms' ) .'</a>';
+      if($can_delete)
+        echo ' - <a title="Delete"  id="' . $post_id . '" class="bf_delete_post" href="#">' . __( 'Delete', 'buddyforms' ) . '</a>';
       ?>
     </div>
   </div>
@@ -63,13 +137,57 @@ function buddyforms_pig_the_loop_actions($post_id){
 }
 add_action('buddyforms_the_loop_li_last', 'buddyforms_pig_the_loop_actions', 99, 1);
 
+function buddyforms_pig_the_loop_meta_html($meta_tmp){
+  return '';
+}
+add_filter('buddyforms_the_loop_meta_html', 'buddyforms_pig_the_loop_meta_html', 10, 1);
+
 function buddyforms_pig_user_can_delete(){
   return true;
 }
 add_filter('buddyforms_user_can_delete', 'buddyforms_pig_user_can_delete', 10, 1);
 
 function bf_pig_loop_edit_post_link($link, $post_id){
-echo 'das';
-  return 'da';
+  $group_id = bp_get_group_id();
+
+  if(!$group_id)
+    return $link;
+
+  if(!is_user_logged_in())
+    return $link;
+
+  if (get_the_author_meta('ID') !=  get_current_user_id())
+    return $link;
+
+  $group_id       = bp_get_group_id();
+
+  $can_edit   = false;
+
+  $settings	= groups_get_groupmeta( $group_id, '_buddyforms_pig' );
+
+  switch ($settings['edit']) {
+    case 'admin':
+        if( groups_is_user_admin(get_current_user_id(), $group_id) ){
+          $can_edit = true;
+        }
+      break;
+    case 'mod':
+        if( groups_is_user_mod(get_current_user_id(), $group_id) ){
+          $can_edit = true;
+        }
+      break;
+    case 'member':
+        if( groups_is_user_member(get_current_user_id(), $group_id) ){
+          $can_edit = true;
+        }
+      break;
+  }
+
+  $group_permalink = bp_get_group_permalink() . bp_current_action();
+
+  if($can_edit)
+    return '<a title="aaEdit" id="' . $post_id . '" class="bf_edit_post" href="' . $group_permalink . '/edit/' . $post_id . '">' . __( 'Edit', 'buddyforms' ) .'</a>';
+
+  return $link;
 }
-add_filter('bf_loop_edit_post_link', 'bf_pig_loop_edit_post_link', 99999, 2);
+//add_filter('bf_loop_edit_post_link', 'bf_pig_loop_edit_post_link', 99999, 2);
