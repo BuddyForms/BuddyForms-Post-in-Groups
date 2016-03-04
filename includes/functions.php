@@ -1,18 +1,6 @@
 <?php
 
-function buddyforms_post_in_groups_load_constants() {
 
-  if (!defined('BUDDYFORMS_PIG_INSTALL_PATH'))
-    define('BUDDYFORMS_PIG_INSTALL_PATH', dirname(__FILE__) . '/');
-
-  if (!defined('BUDDYFORMS_PIG_INCLUDES_PATH'))
-    define('BUDDYFORMS_PIG_INCLUDES_PATH', BUDDYFORMS_PIG_INSTALL_PATH . 'includes/');
-
-  if (!defined('BUDDYFORMS_PIG_TEMPLATE_PATH'))
-    define('BUDDYFORMS_PIG_TEMPLATE_PATH', BUDDYFORMS_PIG_INSTALL_PATH . 'templates/');
-
-}
-add_action('init', 'buddyforms_post_in_groups_load_constants');
 
 function buddyforms_post_in_groups_front_js_css_loader($fount){
     return true;
@@ -138,12 +126,57 @@ function buddyforms_pig_the_loop_actions($post_id){
 add_action('buddyforms_the_loop_li_last', 'buddyforms_pig_the_loop_actions', 99, 1);
 
 function buddyforms_pig_the_loop_meta_html($meta_tmp){
+  if(!bp_is_group_single())
+    return $meta_tmp;
+
+  $group_id = bp_get_group_id();
+
+  if(!$group_id)
+    return $meta_tmp;
+
   return '';
 }
 add_filter('buddyforms_the_loop_meta_html', 'buddyforms_pig_the_loop_meta_html', 10, 1);
 
-function buddyforms_pig_user_can_delete(){
-  return true;
+function buddyforms_pig_user_can_delete($user_can_delete){
+  if(!bp_is_group_single())
+    return $user_can_delete;
+
+  $group_id = bp_get_group_id();
+
+  if(!$group_id)
+    return $user_can_delete;
+
+
+  if(!is_user_logged_in())
+      return $user_can_delete;
+
+    if (get_the_author_meta('ID') ==  get_current_user_id())
+      return $user_can_delete;
+
+
+    $settings	= groups_get_groupmeta( $group_id, '_buddyforms_pig' );
+
+    switch ($settings['delete']) {
+      case 'admin':
+          if( groups_is_user_admin(get_current_user_id(), $group_id) ){
+            $user_can_delete = true;
+          }
+        break;
+      case 'mod':
+          if( groups_is_user_mod(get_current_user_id(), $group_id) ){
+            $user_can_delete = true;
+          }
+        break;
+      case 'member':
+          if( groups_is_user_member(get_current_user_id(), $group_id) ){
+            $user_can_delete = true;
+          }
+        break;
+    }
+
+return $user_can_delete;
+
 }
 add_filter('buddyforms_user_can_delete', 'buddyforms_pig_user_can_delete', 10, 1);
 
@@ -191,3 +224,27 @@ function bf_pig_loop_edit_post_link($link, $post_id){
   return $link;
 }
 //add_filter('bf_loop_edit_post_link', 'bf_pig_loop_edit_post_link', 99999, 2);
+
+
+//
+// Redirect to group single posts list, if form settup -> after submit is set to display posts list
+//
+function buddyforms_pig_after_save_post_redirect($permalink){
+  global $buddyforms;
+
+  if(!bp_is_group_single())
+    return $permalink;
+
+
+  if (isset($buddyforms[$_POST['form_slug']]['after_submit'])) {
+      if ($buddyforms[$_POST['form_slug']]['after_submit'] == 'display_posts_list') {
+          $permalink = bp_get_group_permalink() . bp_current_action();
+      }
+  }
+
+echo $permalink;
+
+  return $permalink;
+
+}
+add_filter('buddyforms_after_save_post_redirect', 'buddyforms_pig_after_save_post_redirect', 10 ,1);

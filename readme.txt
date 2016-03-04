@@ -14,10 +14,25 @@ Post in Groups
 
 This is the BuddyForms Post in Groups extension. You need the BuddyForms plugin installed for the plugin to work. <a href="http://buddyforms.com" target="_blank">Get BuddyForms now!</a>
 
-Let your users post in Groups.
-Assign a BuddyPress form with a form and let your users write in this group.
+<h4>Let your users post in Groups.</h4>
+Assign a BuddyPress form with a group and let your users write together in this group.
 You can define the user rights in the settings.
 
+
+Post in Group Options
+
+Select the forms you like to integrate:
+
+
+Which members of this group are allowed to create/edit/delete posts?
+
+Minimum role to create posts:
+
+Minimum role to edit posts:
+
+Minimum role to delete posts:
+
+Please Note: The Post Author and Admin will always have all rights to edit or delete a post.
 
 <h4>Documentation & Support</h4>
 

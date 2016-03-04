@@ -35,16 +35,17 @@ function buddyforms_pig_settings_page_tab($tab){
             <tbody>
             <tr valign="top">
                 <th scope="row" valign="top">
-                    <?php _e('Enable Post in Groups'); ?>
-                    <?php _e('How is alowed to enable the Post in Groups Feature in a Group'); ?>
+                    <?php _e('Who is alowed to enable the Post in Groups Feature in a Group'); ?>
                 </th>
                 <td>
                   <select name="buddyforms_pig_options[permission]" class="regular-radio">
-                      <option value="none">Disabled</option>
+                      <option value="disabled">Disabled</option>
                       <option <?php echo selected($buddyforms_pig['permission'], 'all', true) ?>
-                        value="all">All Users</option>
+                        value="all">All ( During Group Creation )</option>
                       <option <?php echo selected($buddyforms_pig['permission'], 'admin', true) ?>
-                        value="all2">Admins Only</option>
+                        value="group-admin">Group Admins ( Only for existing Groups )</option>
+                      <option <?php echo selected($buddyforms_pig['permission'], 'admin', true) ?>
+                        value="admin">Site Admins ( Only for existing Groups )</option>
                   </select>
                 </td>
             </tr>
