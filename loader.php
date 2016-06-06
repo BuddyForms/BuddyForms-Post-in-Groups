@@ -31,35 +31,41 @@ Network: false
 
 function buddyforms_post_in_groups_load_constants() {
 
-  define('BUDDYFORMS_PIG', '0.1');
+	define( 'BUDDYFORMS_PIG', '0.1' );
 
-  if (!defined('BUDDYFORMS_PIG_INSTALL_PATH'))
-    define('BUDDYFORMS_PIG_INSTALL_PATH', dirname(__FILE__) . '/');
+	if ( ! defined( 'BUDDYFORMS_PIG_INSTALL_PATH' ) ) {
+		define( 'BUDDYFORMS_PIG_INSTALL_PATH', dirname( __FILE__ ) . '/' );
+	}
 
-  if (!defined('BUDDYFORMS_PIG_INCLUDES_PATH'))
-    define('BUDDYFORMS_PIG_INCLUDES_PATH', BUDDYFORMS_PIG_INSTALL_PATH . 'includes/');
+	if ( ! defined( 'BUDDYFORMS_PIG_INCLUDES_PATH' ) ) {
+		define( 'BUDDYFORMS_PIG_INCLUDES_PATH', BUDDYFORMS_PIG_INSTALL_PATH . 'includes/' );
+	}
 
-  if (!defined('BUDDYFORMS_PIG_TEMPLATE_PATH'))
-    define('BUDDYFORMS_PIG_TEMPLATE_PATH', BUDDYFORMS_PIG_INSTALL_PATH . 'templates/');
+	if ( ! defined( 'BUDDYFORMS_PIG_TEMPLATE_PATH' ) ) {
+		define( 'BUDDYFORMS_PIG_TEMPLATE_PATH', BUDDYFORMS_PIG_INSTALL_PATH . 'templates/' );
+	}
 
 }
-add_action('init', 'buddyforms_post_in_groups_load_constants');
+
+add_action( 'init', 'buddyforms_post_in_groups_load_constants' );
 
 function buddyforms_pig_init() {
 
-  $buddyforms_pig 	= get_option( 'buddyforms_pig_options' );
+	$buddyforms_pig = get_option( 'buddyforms_pig_options' );
 
-  require (dirname(__FILE__) . '/includes/functions.php');
+	require( dirname( __FILE__ ) . '/includes/functions.php' );
 
-  if($buddyforms_pig['permission'] != 'disabled'){
-    require (dirname(__FILE__) . '/includes/buddyforms-post-in-groups.php');
-	  bp_register_group_extension( 'BuddyForms_Post_in_Groups' );
-  }
+	if ( $buddyforms_pig['permission'] != 'disabled' ) {
+		require( dirname( __FILE__ ) . '/includes/buddyforms-post-in-groups.php' );
+		bp_register_group_extension( 'BuddyForms_Post_in_Groups' );
+	}
 
 }
-add_action('bp_loaded', 'buddyforms_pig_init');
 
-function buddyforms_pig_admin_init(){
-  require (dirname(__FILE__) . '/includes/admin/admin.php');
+add_action( 'bp_loaded', 'buddyforms_pig_init' );
+
+function buddyforms_pig_admin_init() {
+	require( dirname( __FILE__ ) . '/includes/admin/admin.php' );
 }
-add_action('admin_init', 'buddyforms_pig_admin_init');
+
+add_action( 'admin_init', 'buddyforms_pig_admin_init' );
