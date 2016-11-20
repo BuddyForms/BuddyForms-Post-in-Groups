@@ -4,9 +4,9 @@ function bf_pig_admin_tabs($tabs){
   $tabs['buddypress-pig'] = 'BuddyPress Post in Groups';
   return $tabs;
 }
-add_filter('bf_admin_tabs', 'bf_pig_admin_tabs', 10, 1);
+add_filter('buddyforms_admin_tabs', 'bf_pig_admin_tabs', 10, 1);
 
-function buddyforms_pig_settings_page_tab($tab){
+function buddyforms_pig_settings_page_tab( $tab ){
   global $buddyforms;
   if($tab == 'buddypress-pig'){
 
