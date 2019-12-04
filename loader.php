@@ -51,6 +51,10 @@ add_action( 'init', 'buddyforms_post_in_groups_load_constants' );
 
 function buddyforms_pig_init() {
 
+//	if ( ! function_exists( 'bp_register_group_extension' ) ) {
+//		return;
+//	}
+
 	$buddyforms_pig = get_option( 'buddyforms_pig_options' );
 
 	require( dirname( __FILE__ ) . '/includes/functions.php' );
@@ -73,18 +77,18 @@ add_action( 'admin_init', 'buddyforms_pig_admin_init' );
 //
 // Check the plugin dependencies
 //
-add_action('init', function(){
+add_action( 'init', function () {
 
 	// Only Check for requirements in the admin
-	if(!is_admin()){
+	if ( ! is_admin() ) {
 		return;
 	}
 
 	// Require TGM
-	require ( dirname(__FILE__) . '/includes/resources/tgm/class-tgm-plugin-activation.php' );
+	require( dirname( __FILE__ ) . '/includes/resources/tgm/class-tgm-plugin-activation.php' );
 
 	// Hook required plugins function to the tgmpa_register action
-	add_action( 'tgmpa_register', function(){
+	add_action( 'tgmpa_register', function () {
 
 		// Create the required plugins array
 		$plugins['buddypress'] = array(
@@ -96,23 +100,29 @@ add_action('init', function(){
 
 		if ( ! defined( 'BUDDYFORMS_PRO_VERSION' ) ) {
 			$plugins['buddyforms'] = array(
-				'name'      => 'BuddyForms',
-				'slug'      => 'buddyforms',
-				'required'  => true,
+				'name'     => 'BuddyForms',
+				'slug'     => 'buddyforms',
+				'required' => true,
 			);
 		}
 
 		$config = array(
-			'id'           => 'buddyforms-tgmpa',  // Unique ID for hashing notices for multiple instances of TGMPA.
-			'parent_slug'  => 'plugins.php',       // Parent menu slug.
-			'capability'   => 'manage_options',    // Capability needed to view plugin install page, should be a capability associated with the parent menu used.
-			'has_notices'  => true,                // Show admin notices or not.
-			'dismissable'  => false,               // If false, a user cannot dismiss the nag message.
-			'is_automatic' => true,                // Automatically activate plugins after installation or not.
+			'id'           => 'buddyforms-tgmpa',
+			// Unique ID for hashing notices for multiple instances of TGMPA.
+			'parent_slug'  => 'plugins.php',
+			// Parent menu slug.
+			'capability'   => 'manage_options',
+			// Capability needed to view plugin install page, should be a capability associated with the parent menu used.
+			'has_notices'  => true,
+			// Show admin notices or not.
+			'dismissable'  => false,
+			// If false, a user cannot dismiss the nag message.
+			'is_automatic' => true,
+			// Automatically activate plugins after installation or not.
 		);
 
 		// Call the tgmpa function to register the required plugins
 		tgmpa( $plugins, $config );
 
 	} );
-}, 1, 1);
+}, 1, 1 );

@@ -20,7 +20,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 
 			$form_slug = $this->post_in_group_form_slug;
 
-			$name = $buddyforms[ $form_slug ]['name'];
+			$name = isset($buddyforms[ $form_slug ]['name']) ? $buddyforms[ $form_slug ]['name'] : '';
 
 			if ( isset( $this->buddyforms_pig['create'] ) ) {
 				switch ( $this->buddyforms_pig['create'] ) {
