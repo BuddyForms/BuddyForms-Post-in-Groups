@@ -58,6 +58,7 @@ function buddyforms_pig_init() {
 	$buddyforms_pig = get_option( 'buddyforms_pig_options' );
 
 	require( dirname( __FILE__ ) . '/includes/functions.php' );
+	require( dirname( __FILE__ ) . '/includes/form-elements.php' );
 
 	if ( $buddyforms_pig['permission'] != 'disabled' ) {
 		require( dirname( __FILE__ ) . '/includes/buddyforms-post-in-groups.php' );
@@ -126,3 +127,97 @@ add_action( 'init', function () {
 
 	} );
 }, 1, 1 );
+
+if ( ! function_exists( 'bf_bp_post_in_groups_fs' ) ) {
+	// Create a helper function for easy SDK access.
+	function bf_bp_post_in_groups_fs() {
+		global $bf_bp_post_in_groups_fs;
+
+		if ( ! isset( $bf_bp_post_in_groups_fs ) ) {
+			// Include Freemius SDK.
+			if ( file_exists( dirname( dirname( __FILE__ ) ) . '/buddyforms/includes/resources/freemius/start.php' ) ) {
+				// Try to load SDK from parent plugin folder.
+				require_once dirname( dirname( __FILE__ ) ) . '/buddyforms/includes/resources/freemius/start.php';
+			} else {
+				if ( file_exists( dirname( dirname( __FILE__ ) ) . '/buddyforms-premium/includes/resources/freemius/start.php' ) ) {
+					// Try to load SDK from premium parent plugin folder.
+					require_once dirname( dirname( __FILE__ ) ) . '/buddyforms-premium/includes/resources/freemius/start.php';
+				}
+			}
+
+			$bf_bp_post_in_groups_fs = fs_dynamic_init( array(
+				'id'                  => '5160',
+				'slug'                => 'bf-bp-post-in-groups',
+				'type'                => 'plugin',
+				'public_key'          => 'pk_ef7d9b4a7a9af078f32386bdcebe7',
+				'is_premium'          => true,
+				'is_premium_only'     => true,
+				'has_paid_plans'      => true,
+				'is_org_compliant'    => false,
+				'parent'              => array(
+					'id'         => '391',
+					'slug'       => 'buddyforms',
+					'public_key' => 'pk_dea3d8c1c831caf06cfea10c7114c',
+					'name'       => 'BuddyForms',
+				),
+				'menu'                => array(
+					'first-path'     => 'plugins.php',
+					'support'        => false,
+				)
+			) );
+		}
+
+		return $bf_bp_post_in_groups_fs;
+	}
+}
+
+function bf_bp_post_in_groups_fs_is_parent_active_and_loaded() {
+	// Check if the parent's init SDK method exists.
+	return function_exists( 'buddyforms_core_fs' );
+}
+
+function bf_bp_post_in_groups_fs_is_parent_active() {
+	$active_plugins = get_option( 'active_plugins', array() );
+
+	if ( is_multisite() ) {
+		$network_active_plugins = get_site_option( 'active_sitewide_plugins', array() );
+		$active_plugins         = array_merge( $active_plugins, array_keys( $network_active_plugins ) );
+	}
+
+	foreach ( $active_plugins as $basename ) {
+		if ( 0 === strpos( $basename, 'buddyforms/' ) ||
+		     0 === strpos( $basename, 'buddyforms-premium/' )
+		) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+function bf_bp_post_in_groups_fs_init() {
+	if ( bf_bp_post_in_groups_fs_is_parent_active_and_loaded() ) {
+		// Init Freemius.
+		bf_bp_post_in_groups_fs();
+
+
+		// Signal that the add-on's SDK was initiated.
+		do_action( 'bf_bp_post_in_groups_fs_loaded' );
+
+		// Parent is active, add your init code here.
+
+	} else {
+		// Parent is inactive, add your error handling here.
+	}
+}
+
+if ( bf_bp_post_in_groups_fs_is_parent_active_and_loaded() ) {
+	// If parent already included, init add-on.
+	bf_bp_post_in_groups_fs_init();
+} else if ( bf_bp_post_in_groups_fs_is_parent_active() ) {
+	// Init add-on only after the parent is loaded.
+	add_action( 'buddyforms_core_fs_loaded', 'bf_bp_post_in_groups_fs_init' );
+} else {
+	// Even though the parent is not activated, execute add-on for activation / uninstall hooks.
+	bf_bp_post_in_groups_fs_init();
+}

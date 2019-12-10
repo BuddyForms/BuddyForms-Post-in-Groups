@@ -145,7 +145,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 
 			<table class="_buddyforms_pig-options">
 				<tr>
-					<td class="label">
+					<td class="groups-label">
 						<label
 							for="_buddyforms_pig-can-create"><?php _e( 'Minimum role to create posts:', 'buddyforms' ) ?></label>
 					</td>
@@ -162,7 +162,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 					</td>
 				</tr>
 				<tr>
-					<td class="label">
+					<td class="groups-label">
 						<label
 							for="_buddyforms_pig-can-create"><?php _e( 'Minimum role to edit posts:', 'buddyforms' ) ?></label>
 					</td>
@@ -179,7 +179,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 					</td>
 				</tr>
 				<tr>
-					<td class="label">
+					<td class="groups-label">
 						<label
 							for="_buddyforms_pig-can-create"><?php _e( 'Minimum role to delete posts:', 'buddyforms' ) ?></label>
 					</td>

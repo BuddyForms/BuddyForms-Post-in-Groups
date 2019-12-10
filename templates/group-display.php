@@ -1,31 +1,42 @@
 <?php
 
-global $buddyforms_user_can;
+global $buddyforms_user_can, $wp_query, $current_user, $the_lp_query, $bp, $buddyforms, $buddyforms_member_tabs, $form_slug, $paged;
 $group_id        = bp_get_group_id();
 $group_permalink = bp_get_group_permalink() . bp_current_action();
 
 ?>
 
-	<div class="item-list-tabs no-ajax" id="subnav" role="navigation">
-		<ul>
-			<li id="view-post-details-groups-li"
-			    class="<?php echo bp_action_variable() == '' ? 'current selected' : ''; ?>"><a id="view-post-details"
-			                                                                                   class="bf_show_pig"
-			                                                                                   href=" <?php echo $group_permalink ?>">View</a>
-			</li>
+    <nav class="bp-navs bp-subnavs no-ajax group-subnav" id="subnav" role="navigation"
+         aria-label="Group administration menu">
+
+        <ul class="subnav">
+
+            <li id="view-post-details-groups-li"
+                class="<?php echo bp_action_variable() == '' ? 'current selected' : ''; ?> bp-groups-admin-tab"><a
+                        id="view-post-details"
+                        class="bf_show_pig"
+                        href=" <?php echo $group_permalink ?>">View</a>
+            </li>
 			<?php if ( $buddyforms_user_can ) { ?>
-				<li id="edit-post-details-groups-li"
-				    class="<?php echo bp_action_variable() == 'create' ? 'current selected' : ''; ?>"><a
-						id="edit-post-details" class="bf_show_pig"
-						href="<?php echo $group_permalink ?>/create">Create</a></li>
+                <li id="edit-post-details-groups-li"
+                    class="<?php echo bp_action_variable() == 'create' ? 'current selected' : ''; ?> bp-groups-admin-tab">
+                    <a
+                            id="edit-post-details" class="bf_show_pig"
+                            href="<?php echo $group_permalink ?>/create">Create</a></li>
 			<?php } ?>
 			<?php if ( bp_action_variable() == 'edit' ) { ?>
-				<li id="edit-post-details-groups-li"
-				    class="<?php echo bp_action_variable() == 'edit' ? 'current selected' : ''; ?>"><a
-						id="edit-post-details" class="bf_show_pig" href="#">Edit</a></li>
+                <li id="edit-post-details-groups-li"
+                    class="<?php echo bp_action_variable() == 'edit' ? 'current selected' : ''; ?> bp-groups-admin-tab">
+                    <a
+                            id="edit-post-details" class="bf_show_pig" href="#">Edit</a></li>
 			<?php } ?>
-		</ul>
-	</div>
+
+
+        </ul>
+
+
+    </nav>
+
 <?php
 switch ( bp_action_variable() ) {
 	case 'create':
@@ -42,15 +53,16 @@ switch ( bp_action_variable() ) {
 		add_filter( 'buddyforms_user_can_edit', 'buddyforms_post_in_groups_front_js_css_loader', 10, 1 );
 		if ( $buddyforms_user_can ) {
 			$args = array(
-				'form_slug' => $this->post_in_group_form_slug,
+				'form_slug' => $bp->current_action,
 				'post_id'   => bp_action_variable( 1 ),
 			);
+			print_r( $args );
 			echo buddyforms_create_edit_form( $args );
 		}
 
 		break;
 	default:
-		global $wp_query, $current_user, $the_lp_query, $bp, $buddyforms, $buddyforms_member_tabs, $form_slug, $paged;
+
 
 		$temp_query        = $the_lp_query;
 		$form_slug         = $bp->current_action;
