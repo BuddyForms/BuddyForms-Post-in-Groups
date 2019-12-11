@@ -30,13 +30,31 @@ function buddyforms_buddypress_post_in_groups_elements_to_select( $elements_sele
  */
 add_filter( 'buddyforms_form_element_add_field', 'buddyforms_buddypress_post_in_groups_form_builder_form_elements', 1, 5 );
 function buddyforms_buddypress_post_in_groups_form_builder_form_elements( $form_fields, $form_slug, $field_type, $field_id ) {
-	global $field_position, $buddyforms;
+	global $field_position, $buddyforms, $bp;
 
 
 	switch ( $field_type ) {
-		case 'group_elect':
+		case 'group_select':
 
 			unset( $form_fields );
+			$name                           = isset( $buddyforms[ $form_slug ]['form_fields'][ $field_id ]['name'] ) ? stripcslashes( $buddyforms[ $form_slug ]['form_fields'][ $field_id ]['name'] ) : __( 'Group Select', 'buddyforms' );
+			$form_fields['general']['name'] = new Element_Textbox( '<b>' . __( 'Name', 'buddyforms' ) . '</b>', "buddyforms_options[form_fields][" . $field_id . "][name]", array(
+				'value'    => $name,
+				'data'     => $field_id,
+				'class'    => "use_as_slug",
+				'required' => 1
+			) );
+
+			$description                           = isset( $buddyforms[ $form_slug ]['form_fields'][ $field_id ]['description'] ) ? stripcslashes( $buddyforms[ $form_slug ]['form_fields'][ $field_id ]['description'] ) : __( 'If you change the group and you are not the author of the post or member of the new group with edit rights, you will lose the rights to edit and delete the post.', 'buddyforms' );
+			$form_fields['general']['description'] = new Element_Textbox( '<b>' . __( 'Description:', 'buddyforms' ) . '</b>', "buddyforms_options[form_fields][" . $field_id . "][description]", array( 'value' => $description ) );
+
+			$form_fields['general']['slug']  = new Element_Hidden( "buddyforms_options[form_fields][" . $field_id . "][slug]", 'buddyforms_buddypress_group_author' );
+			$form_fields['general']['type']  = new Element_Hidden( "buddyforms_options[form_fields][" . $field_id . "][type]", $field_type );
+			$form_fields['general']['order'] = new Element_Hidden( "buddyforms_options[form_fields][" . $field_id . "][order]", $field_position, array( 'id' => 'buddyforms/' . $form_slug . '/form_fields/' . $field_id . '/order' ) );
+
+
+
+
 			break;
 		case 'group_post_author':
 			unset( $form_fields );
@@ -82,19 +100,33 @@ function buddyforms_buddypress_post_in_groups_frontend_form_elements( $form, $fo
 	}
 
 	switch ( $customfield['type'] ) {
-		case 'group_elect':
+		case 'group_select':
 
-			$groups_array = array( 'all' => 'All Members' );
+//			$groups_array = array( 'all' => 'All Groups' );
 
 			if ( bp_has_groups() ) :
 
 				while ( bp_groups() ) : bp_the_group();
 
-					$groups_array[ bp_the_profile_group_id() ] = bp_the_profile_group_name();
+					$groups_array[  bp_get_group_id() ] = bp_get_group_name();
 
 				endwhile;
 
 			endif;
+
+			$label = __( 'Select a Group', 'buddyforms' );
+
+			$element_attr['class'] = $element_attr['class'] . ' bf-select2';
+			$element_attr['value'] = get_post_field( 'buddyforms_buddypress_group', $post_id );
+			$element_attr['id']    = 'group-post-authors';
+
+
+			$element = new Element_Select( $label, 'buddyforms_buddypress_group', $groups_array, $element_attr );
+
+			BuddyFormsAssets::load_select2_assets();
+
+			$form->addElement( $element );
+
 
 			break;
 		case 'group_post_author':
@@ -147,29 +179,25 @@ function buddyforms_buddypress_post_in_groups_frontend_form_elements( $form, $fo
  * Save Fields
  *
  */
-//dd_action( 'buddyforms_update_post_meta', 'buddyforms_buddypress_post_in_groups_update_post_meta', 9999, 2 );
+add_action( 'buddyforms_update_post_meta', 'buddyforms_buddypress_post_in_groups_update_post_meta', 9999, 2 );
 function buddyforms_buddypress_post_in_groups_update_post_meta( $customfield, $post_id ) {
 
 	if ( ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 		return;
 	}
 
-	if ( $customfield['type'] == 'group_post_author' ) {
+	if ( $customfield['type'] == 'group_select' ) {
 
 
-		if ( ! isset( $_POST['buddyforms_buddypress_group_author'] ) ) {
-			return;
-		}
-		if ( $_POST['buddyforms_buddypress_group_author'] == get_post_field( 'post_author', $post_id ) ) {
+		if ( ! isset( $_POST['buddyforms_buddypress_group'] ) ) {
 			return;
 		}
 
 		$arg         = array(
 			'ID'          => $post_id,
-			'post_author' => $_POST['buddyforms_buddypress_group_author'],
+			'post_author' => $_POST['buddyforms_buddypress_group'],
 		);
-		$update_post = wp_update_post( $arg, true );
-//		update_post_meta( $post_id, 'post_author', $_POST['buddyforms_buddypress_group_author'] );
+		update_post_meta( $post_id, 'buddyforms_buddypress_group', $_POST['buddyforms_buddypress_group'] );
 
 	}
 }

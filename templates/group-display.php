@@ -76,10 +76,40 @@ switch ( bp_action_variable() ) {
 			'posts_per_page' => 5,
 			'post_parent'    => 0,
 			'paged'          => $paged,
-			'author'         => $bp->displayed_user->id,
-			'meta_key'       => '_bf_form_slug',
-			'meta_value'     => $form_slug
+		//	'author'         => $bp->displayed_user->id,
+
 		);
+
+		$buddyforms_pig = groups_get_groupmeta( $group_id, '_buddyforms_pig' );
+
+		if ( isset( $buddyforms_pig['view'] ) && $buddyforms_pig['view'] == 'form'  ) {
+		    $query_args['meta_key'] = '_bf_form_slug';
+			$query_args['meta_value'] = $form_slug;
+		}
+		if ( isset( $buddyforms_pig['view'] ) && $buddyforms_pig['view'] == 'assigned'  ) {
+			$query_args['meta_key']   = 'buddyforms_buddypress_group';
+			$query_args['meta_value'] = $group_id;
+		}
+
+		if ( isset( $buddyforms_pig['view'] ) && $buddyforms_pig['view'] == 'group_members'  ) {
+
+
+			// An array of optional arguments.
+			$args = array(
+				'group_id' => $group_id,
+			);
+
+
+			$result = groups_get_group_members($args);
+
+			print_r($result);
+
+
+			$query_args['author__in'] = array_keys($result['members']);
+		}
+
+
+
 
 		if ( isset( $list_posts_option ) && $list_posts_option == 'list_all' ) {
 			unset( $query_args['meta_key'] );
@@ -94,10 +124,6 @@ switch ( bp_action_variable() ) {
 		$the_lp_query = new WP_Query( $query_args );
 		buddyforms_locate_template( 'the-loop', $form_slug );
 
-		// Support for wp_pagenavi
-		if ( function_exists( 'wp_pagenavi' ) ) {
-			wp_pagenavi( array( 'query' => $the_lp_query ) );
-		}
 		$the_lp_query = $temp_query;
 		break;
 }
