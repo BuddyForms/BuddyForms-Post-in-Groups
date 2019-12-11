@@ -121,6 +121,11 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 			$form_slug = groups_get_groupmeta( $group_id, '_bf_pig_form_slug' ); ?>
 
 			<h4><?php _e( 'Post in Group Options', 'buddyforms' ) ?></h4>
+            <style>
+                td, th{
+                    padding:10px !important;
+                }
+            </style>
 			<p><?php _e( 'Select the forms you like to integrate: ', 'buddyforms' ) ?>
 
 				<select name="_bf_pig_form_slug">
@@ -147,7 +152,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 				<tr>
 					<td class="groups-label">
 						<label
-							for="_buddyforms_pig-can-create"><?php _e( 'Minimum role to create posts:', 'buddyforms' ) ?></label>
+							for="_buddyforms_pig-can-create"><?php _e( 'Minimum role to create posts: ', 'buddyforms' ) ?></label>
 					</td>
 
 					<td>
@@ -164,7 +169,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 				<tr>
 					<td class="groups-label">
 						<label
-							for="_buddyforms_pig-can-create"><?php _e( 'Minimum role to edit posts:', 'buddyforms' ) ?></label>
+							for="_buddyforms_pig-can-create"><?php _e( 'Minimum role to edit posts: ', 'buddyforms' ) ?></label>
 					</td>
 
 					<td>
@@ -181,7 +186,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 				<tr>
 					<td class="groups-label">
 						<label
-							for="_buddyforms_pig-can-create"><?php _e( 'Minimum role to delete posts:', 'buddyforms' ) ?></label>
+							for="_buddyforms_pig-can-create"><?php _e( 'Minimum role to delete posts: ', 'buddyforms' ) ?></label>
 					</td>
 
 					<td>
@@ -197,6 +202,44 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 				</tr>
 			</table>
 			<p>Please Note: The Post Author and Admin will always have all rights to edit or delete a post.</p>
+
+
+
+
+			<?php
+
+
+			$view = empty( $settings['view'] ) ? 'assigned' : $settings['view'];
+
+
+			?>
+            <br>
+            <p>Filter the post list</p>
+
+            <table class="_buddyforms_pig-options">
+                <tr>
+                    <td style="padding:10px" class="groups-label">
+                        <label
+                                for="_buddyforms_pig-can-create"><?php _e( 'View posts from: ', 'buddyforms' ) ?></label>
+                    </td>
+
+                    <td style="padding:10px">
+                        <select name="_buddyforms_pig[view]" id="_buddyforms_pig-view">
+                            <option value="post_type" <?php selected( $view, 'post_type' ) ?> />
+							<?php _e( 'Post Type', 'buddyforms' ) ?></option>
+                            <option value="group_members" <?php selected( $view, 'group_members' ) ?> />
+							<?php _e( 'Group Members', 'buddyforms' ) ?></option>
+                            <option value="form" <?php selected( $view, 'form' ) ?> />
+	                        <?php _e( 'Form Submissions', 'buddyforms' ) ?></option>
+                            <option value="assigned" <?php selected( $view, 'assigned' ) ?> />
+	                        <?php _e( 'Assigned Group', 'buddyforms' ) ?></option>
+                        </select>
+                    </td>
+                </tr>
+
+            </table>
+            <br><br><br>
+
 			<?php
 		}
 

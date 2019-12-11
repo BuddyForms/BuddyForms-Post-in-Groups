@@ -51,14 +51,7 @@ add_action( 'init', 'buddyforms_post_in_groups_load_constants' );
 
 function buddyforms_pig_init() {
 
-//	if ( ! function_exists( 'bp_register_group_extension' ) ) {
-//		return;
-//	}
-
 	$buddyforms_pig = get_option( 'buddyforms_pig_options' );
-
-	require( dirname( __FILE__ ) . '/includes/functions.php' );
-	require( dirname( __FILE__ ) . '/includes/form-elements.php' );
 
 	if ( $buddyforms_pig['permission'] != 'disabled' ) {
 		require( dirname( __FILE__ ) . '/includes/buddyforms-post-in-groups.php' );
@@ -146,23 +139,23 @@ if ( ! function_exists( 'bf_bp_post_in_groups_fs' ) ) {
 			}
 
 			$bf_bp_post_in_groups_fs = fs_dynamic_init( array(
-				'id'                  => '5160',
-				'slug'                => 'bf-bp-post-in-groups',
-				'type'                => 'plugin',
-				'public_key'          => 'pk_ef7d9b4a7a9af078f32386bdcebe7',
-				'is_premium'          => true,
-				'is_premium_only'     => true,
-				'has_paid_plans'      => true,
-				'is_org_compliant'    => false,
-				'parent'              => array(
+				'id'               => '5160',
+				'slug'             => 'bf-bp-post-in-groups',
+				'type'             => 'plugin',
+				'public_key'       => 'pk_ef7d9b4a7a9af078f32386bdcebe7',
+				'is_premium'       => true,
+				'is_premium_only'  => true,
+				'has_paid_plans'   => true,
+				'is_org_compliant' => false,
+				'parent'           => array(
 					'id'         => '391',
 					'slug'       => 'buddyforms',
 					'public_key' => 'pk_dea3d8c1c831caf06cfea10c7114c',
 					'name'       => 'BuddyForms',
 				),
-				'menu'                => array(
-					'first-path'     => 'plugins.php',
-					'support'        => false,
+				'menu'             => array(
+					'first-path' => 'plugins.php',
+					'support'    => false,
 				)
 			) );
 		}
@@ -204,7 +197,9 @@ function bf_bp_post_in_groups_fs_init() {
 		// Signal that the add-on's SDK was initiated.
 		do_action( 'bf_bp_post_in_groups_fs_loaded' );
 
-		// Parent is active, add your init code here.
+		require( dirname( __FILE__ ) . '/includes/functions.php' );
+		require( dirname( __FILE__ ) . '/includes/form-elements.php' );
+
 
 	} else {
 		// Parent is inactive, add your error handling here.
