@@ -58,7 +58,9 @@ switch ( bp_action_variable() ) {
 			);
 			print_r( $args );
 			echo buddyforms_create_edit_form( $args );
-		}
+		} else {
+		    echo 'You have not the needed rights to edit this post';
+        }
 
 		break;
 	default:
@@ -94,18 +96,31 @@ switch ( bp_action_variable() ) {
 		if ( isset( $buddyforms_pig['view'] ) && $buddyforms_pig['view'] == 'group_members'  ) {
 
 
+
+		    $group_members = array();
 			// An array of optional arguments.
 			$args = array(
 				'group_id' => $group_id,
 			);
 
 
-			$result = groups_get_group_members($args);
+			$admins = groups_get_group_admins($group_id);
+//			echo '<pre>';
+//			print_r($admins);
+//			echo '</pre>';
+			foreach ($admins as $key =>  $admin){
+				$group_members[$admin->user_id] = $admin->user_id;
+            }
 
-			print_r($result);
+			$members = groups_get_group_members($args);
+			foreach ($members['members'] as $key => $member){
+				$group_members[$member->ID] = $member->ID;
+            }
+//			echo '<pre>';
+//			print_r($members['members']);
+//			echo '</pre>';
 
-
-			$query_args['author__in'] = array_keys($result['members']);
+			$query_args['author__in'] = array_keys($group_members);
 		}
 
 

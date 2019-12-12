@@ -113,10 +113,10 @@ function buddyforms_pig_the_loop_actions( $post_id ) {
 	}
 
 	?>
-	<div class="action">
-		<div class="meta">
+    <div class="action">
+        <div class="meta">
 			<?php if ( ! ( $can_edit == false && $can_delete == false ) ) { ?>
-				<div class="item-status"><?php echo $post_status_name; ?></div>
+                <div class="item-status"><?php echo $post_status_name; ?></div>
 			<?php }
 			if ( $can_edit ) {
 				echo '<a title="Edit" id="' . $post_id . '" class="bf_edit_post" href="' . $group_permalink . '/edit/' . $post_id . '">' . __( 'Edit', 'buddyforms' ) . '</a>';
@@ -125,8 +125,8 @@ function buddyforms_pig_the_loop_actions( $post_id ) {
 				echo ' - <a title="Delete"  id="' . $post_id . '" class="bf_delete_post" href="#">' . __( 'Delete', 'buddyforms' ) . '</a>';
 			}
 			?>
-		</div>
-	</div>
+        </div>
+    </div>
 	<?php
 }
 
@@ -270,3 +270,36 @@ function buddyforms_pig_after_save_post_redirect( $permalink ) {
 }
 
 add_filter( 'buddyforms_after_save_post_redirect', 'buddyforms_pig_after_save_post_redirect', 10, 1 );
+
+
+add_filter( 'buddyforms_current_user_can', 'buddyforms_pig_current_user_can', 10, 4 );
+add_filter( 'buddyforms_user_can_edit', 'buddyforms_pig_current_user_can_edit', 10, 3 );
+
+
+
+function buddyforms_pig_current_user_can( $current_user_can, $form_slug, $post, $type ) {
+    global $buddyforms_user_can;
+
+    $settings = groups_get_groupmeta( bp_get_group_id(), '_buddyforms_pig' );
+
+	if($type == 'edit'){
+		$buddyforms_user_can =  empty( $settings['edit'] ) ? false : $settings['edit'];
+	}
+	if($type == 'delete'){
+		$buddyforms_user_can =  empty( $settings['delete'] ) ? false : $settings['delete'];
+	}
+	if($type == 'all'){
+		$buddyforms_user_can =  empty( $settings['create'] ) ? false : $settings['create'];
+	}
+
+	return $buddyforms_user_can;
+}
+
+function buddyforms_pig_current_user_can_edit($current_user_can){
+
+	$settings = groups_get_groupmeta( bp_get_group_id(), '_buddyforms_pig' );
+
+	$current_user_can =  empty( $settings['edit'] ) ? false : $settings['edit'];
+
+    return $current_user_can;
+}
