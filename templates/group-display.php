@@ -51,15 +51,45 @@ switch ( bp_action_variable() ) {
 		break;
 	case 'edit':
 		add_filter( 'buddyforms_user_can_edit', 'buddyforms_post_in_groups_front_js_css_loader', 10, 1 );
-		if ( $buddyforms_user_can ) {
+
+
+
+		$settings = groups_get_groupmeta( $group_id, '_buddyforms_pig' );
+
+		switch ( $settings['edit'] ) {
+			case 'admin':
+				if ( groups_is_user_admin( get_current_user_id(), $group_id ) ) {
+					$can_edit = true;
+				}
+				break;
+			case 'mod':
+				if ( groups_is_user_mod( get_current_user_id(), $group_id ) ) {
+					$can_edit = true;
+				}
+				if ( groups_is_user_admin( get_current_user_id(), $group_id ) ) {
+					$can_edit = true;
+				}
+				break;
+			case 'member':
+				if ( groups_is_user_member( get_current_user_id(), $group_id ) ) {
+					$can_edit = true;
+				}
+				if ( groups_is_user_mod( get_current_user_id(), $group_id ) ) {
+					$can_edit = true;
+				}
+				if ( groups_is_user_admin( get_current_user_id(), $group_id ) ) {
+					$can_edit = true;
+				}
+				break;
+		}
+		if ( $can_edit ) {
 			$args = array(
 				'form_slug' => $bp->current_action,
 				'post_id'   => bp_action_variable( 1 ),
 			);
-			print_r( $args );
 			echo buddyforms_create_edit_form( $args );
 		} else {
-		    echo 'You have not the needed rights to edit this post';
+		    echo __('You have not the needed rights to edit this post', 'buddyforms');
         }
 
 		break;

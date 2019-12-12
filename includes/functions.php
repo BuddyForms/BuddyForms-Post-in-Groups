@@ -94,10 +94,10 @@ function buddyforms_pig_the_loop_actions( $post_id ) {
 			break;
 	}
 
-	if ( get_the_author_meta( 'ID' ) == get_current_user_id() ) {
-		$can_delete = true;
-		$can_edit   = true;
-	}
+//	if ( get_the_author_meta( 'ID' ) == get_current_user_id() ) {
+//		$can_delete = true;
+//		$can_edit   = true;
+//	}
 
 
 	$group_permalink = bp_get_group_permalink() . bp_current_action();
@@ -272,10 +272,8 @@ function buddyforms_pig_after_save_post_redirect( $permalink ) {
 add_filter( 'buddyforms_after_save_post_redirect', 'buddyforms_pig_after_save_post_redirect', 10, 1 );
 
 
-add_filter( 'buddyforms_current_user_can', 'buddyforms_pig_current_user_can', 10, 4 );
+//add_filter( 'buddyforms_current_user_can', 'buddyforms_pig_current_user_can', 10, 4 );
 add_filter( 'buddyforms_user_can_edit', 'buddyforms_pig_current_user_can_edit', 10, 3 );
-
-
 
 function buddyforms_pig_current_user_can( $current_user_can, $form_slug, $post, $type ) {
     global $buddyforms_user_can;
@@ -291,6 +289,9 @@ function buddyforms_pig_current_user_can( $current_user_can, $form_slug, $post, 
 	if($type == 'all'){
 		$buddyforms_user_can =  empty( $settings['create'] ) ? false : $settings['create'];
 	}
+    	if ( get_the_author_meta( 'ID' ) == get_current_user_id() ) {
+		$buddyforms_user_can = $current_user_can;
+	}
 
 	return $buddyforms_user_can;
 }
@@ -299,7 +300,11 @@ function buddyforms_pig_current_user_can_edit($current_user_can){
 
 	$settings = groups_get_groupmeta( bp_get_group_id(), '_buddyforms_pig' );
 
-	$current_user_can =  empty( $settings['edit'] ) ? false : $settings['edit'];
+	$current_user_can =  empty( $settings['edit'] ) ? false : true;
+
+	if ( get_the_author_meta( 'ID' ) == get_current_user_id() ) {
+		$current_user_can =  true;
+	}
 
     return $current_user_can;
 }
