@@ -4,7 +4,7 @@
 Plugin Name: BuddyForms Posts in Groups
 Plugin URI: http://buddyforms.com/downloads/buddyforms-posts-in-groups/
 Description: BuddyForms Posts in Groups
-Version: 1.0
+Version: 1.0.0
 Author: svenl77, buddyforms
 Author URI: https://profiles.wordpress.org/svenl77
 Licence: GPLv3
