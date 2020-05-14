@@ -31,7 +31,7 @@ Network: false
 
 function buddyforms_post_in_groups_load_constants() {
 
-	define( 'BUDDYFORMS_PIG', '0.1' );
+	define( 'BUDDYFORMS_PIG', '1.0.0' );
 
 	if ( ! defined( 'BUDDYFORMS_PIG_INSTALL_PATH' ) ) {
 		define( 'BUDDYFORMS_PIG_INSTALL_PATH', dirname( __FILE__ ) . '/' );
@@ -197,8 +197,8 @@ function bf_bp_post_in_groups_fs_init() {
 		// Signal that the add-on's SDK was initiated.
 		do_action( 'bf_bp_post_in_groups_fs_loaded' );
 
-		require( dirname( __FILE__ ) . '/includes/functions.php' );
-		require( dirname( __FILE__ ) . '/includes/form-elements.php' );
+		require_once( dirname( __FILE__ ) . '/includes/functions.php' );
+		require_once( dirname( __FILE__ ) . '/includes/form-elements.php' );
 
 
 	} else {
