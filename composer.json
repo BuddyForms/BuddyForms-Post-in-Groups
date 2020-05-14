@@ -1,0 +1,30 @@
+{
+  "name": "themekraft/buddyforms-posts-in-groups",
+  "description": "BuddyForms Posts in Groups.",
+  "type": "wordpress-plugin",
+  "keywords": [
+    "buddyforms",
+    "buddypress groups",
+    "post attached to groups",
+    "groups"
+  ],
+  "homepage": "http://buddyforms.com/downloads/buddyforms-posts-in-groups",
+  "license": "GPL-2.0+",
+  "authors": [
+    {
+      "name": "Sven Lehnert",
+      "email": "svenl@themekraft.com"
+    },
+    {
+      "name": "Guillermo Figueroa Mesa",
+      "email": "gfirem@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "scripts": {
+    "package": "sh .tk/package.sh loader",
+    "wp-release": "sh .tk/wp_release.sh",
+    "beta-release": "sh .tk/full-deploy.sh loader 5160 false beta",
+    "full-release": "sh .tk/full-deploy.sh loader 5160 false released"
+  }
+}
