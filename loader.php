@@ -1,15 +1,15 @@
 <?php
 
 /*
-Plugin Name: BuddyForms Posts in Groups
-Plugin URI: http://buddyforms.com/downloads/buddyforms-posts-in-groups/
-Description: BuddyForms Posts in Groups
-Version: 1.0.1
-Author: svenl77, buddyforms
-Author URI: https://profiles.wordpress.org/svenl77
-Licence: GPLv3
-Network: false
-
+* Plugin Name: BuddyForms Posts in Groups
+* Plugin URI: http://buddyforms.com/downloads/buddyforms-posts-in-groups/
+* Description: BuddyForms Posts in Groups
+* Version: 1.0.1
+* Author: svenl77, buddyforms
+* Author URI: https://profiles.wordpress.org/svenl77
+* Licence: GPLv3
+* Network: false
+*
 *****************************************************************************
 *
 * This script is free software; you can redistribute it and/or modify
