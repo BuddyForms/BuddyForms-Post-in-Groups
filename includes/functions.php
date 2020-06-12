@@ -22,18 +22,21 @@ function buddyforms_post_in_groups_locate_template( $file ) {
 }
 
 function buddyforms_pig_the_loop_actions( $post_id ) {
-	$group_id = bp_get_group_id();
-
-	if ( ! $group_id ) {
+	if ( ! is_user_logged_in() ) {
 		return;
 	}
 
-	if ( ! is_user_logged_in() ) {
+	global $groups_template;
+	if ( !function_exists( 'groups_get_groupmeta' ) || empty($groups_template) ) {
 		return;
 	}
 
 	$group_id = bp_get_group_id();
 	//$buddyforms_pig = get_option( 'buddyforms_pig_options' );
+
+	if ( ! $group_id ) {
+		return;
+	}
 
 	$can_edit   = false;
 	$can_delete = false;
@@ -113,10 +116,10 @@ function buddyforms_pig_the_loop_actions( $post_id ) {
 	}
 
 	?>
-    <div class="action">
-        <div class="meta">
+	<div class="action">
+		<div class="meta">
 			<?php if ( ! ( $can_edit == false && $can_delete == false ) ) { ?>
-                <div class="item-status"><?php echo $post_status_name; ?></div>
+				<div class="item-status"><?php echo $post_status_name; ?></div>
 			<?php }
 			if ( $can_edit ) {
 				echo '<a title="Edit" id="' . $post_id . '" class="bf_edit_post" href="' . $group_permalink . '/edit/' . $post_id . '">' . __( 'Edit', 'buddyforms' ) . '</a>';
@@ -125,8 +128,8 @@ function buddyforms_pig_the_loop_actions( $post_id ) {
 				echo ' - <a title="Delete"  id="' . $post_id . '" class="bf_delete_post" href="#">' . __( 'Delete', 'buddyforms' ) . '</a>';
 			}
 			?>
-        </div>
-    </div>
+		</div>
+	</div>
 	<?php
 }
 
@@ -134,6 +137,11 @@ add_action( 'buddyforms_the_loop_li_last', 'buddyforms_pig_the_loop_actions', 99
 
 function buddyforms_pig_the_loop_meta_html( $meta_tmp ) {
 	if ( ! bp_is_group_single() ) {
+		return $meta_tmp;
+	}
+
+	global $groups_template;
+	if ( !function_exists( 'groups_get_groupmeta' ) || empty($groups_template) ) {
 		return $meta_tmp;
 	}
 
@@ -150,6 +158,11 @@ add_filter( 'buddyforms_the_loop_meta_html', 'buddyforms_pig_the_loop_meta_html'
 
 function buddyforms_pig_user_can_delete( $user_can_delete ) {
 	if ( ! bp_is_group_single() ) {
+		return $user_can_delete;
+	}
+
+	global $groups_template;
+	if ( !function_exists( 'groups_get_groupmeta' ) || empty($groups_template) ) {
 		return $user_can_delete;
 	}
 
@@ -196,12 +209,6 @@ function buddyforms_pig_user_can_delete( $user_can_delete ) {
 add_filter( 'buddyforms_user_can_delete', 'buddyforms_pig_user_can_delete', 10, 1 );
 
 function bf_pig_loop_edit_post_link( $link, $post_id ) {
-	$group_id = bp_get_group_id();
-
-	if ( ! $group_id ) {
-		return $link;
-	}
-
 	if ( ! is_user_logged_in() ) {
 		return $link;
 	}
@@ -210,7 +217,16 @@ function bf_pig_loop_edit_post_link( $link, $post_id ) {
 		return $link;
 	}
 
+	global $groups_template;
+	if ( !function_exists( 'groups_get_groupmeta' ) || empty($groups_template) ) {
+		return $link;
+	}
+
 	$group_id = bp_get_group_id();
+
+	if ( ! $group_id ) {
+		return $link;
+	}
 
 	$can_edit = false;
 
@@ -256,7 +272,6 @@ function buddyforms_pig_after_save_post_redirect( $permalink ) {
 		return $permalink;
 	}
 
-
 	if ( isset( $buddyforms[ $_POST['form_slug'] ]['after_submit'] ) ) {
 		if ( $buddyforms[ $_POST['form_slug'] ]['after_submit'] == 'display_posts_list' ) {
 			$permalink = bp_get_group_permalink() . bp_current_action();
@@ -276,35 +291,42 @@ add_filter( 'buddyforms_after_save_post_redirect', 'buddyforms_pig_after_save_po
 add_filter( 'buddyforms_user_can_edit', 'buddyforms_pig_current_user_can_edit', 10, 3 );
 
 function buddyforms_pig_current_user_can( $current_user_can, $form_slug, $post, $type ) {
-    global $buddyforms_user_can;
+	global $buddyforms_user_can, $groups_template;
 
-    $settings = groups_get_groupmeta( bp_get_group_id(), '_buddyforms_pig' );
+	if ( function_exists( 'groups_get_groupmeta' ) && ! empty( $groups_template ) ) {
+		$settings = groups_get_groupmeta( bp_get_group_id(), '_buddyforms_pig' );
 
-	if($type == 'edit'){
-		$buddyforms_user_can =  empty( $settings['edit'] ) ? false : $settings['edit'];
-	}
-	if($type == 'delete'){
-		$buddyforms_user_can =  empty( $settings['delete'] ) ? false : $settings['delete'];
-	}
-	if($type == 'all'){
-		$buddyforms_user_can =  empty( $settings['create'] ) ? false : $settings['create'];
-	}
-    	if ( get_the_author_meta( 'ID' ) == get_current_user_id() ) {
-		$buddyforms_user_can = $current_user_can;
+		if ( $type == 'edit' ) {
+			$buddyforms_user_can = empty( $settings['edit'] ) ? false : $settings['edit'];
+		}
+		if ( $type == 'delete' ) {
+			$buddyforms_user_can = empty( $settings['delete'] ) ? false : $settings['delete'];
+		}
+		if ( $type == 'all' ) {
+			$buddyforms_user_can = empty( $settings['create'] ) ? false : $settings['create'];
+		}
+		if ( get_the_author_meta( 'ID' ) == get_current_user_id() ) {
+			$buddyforms_user_can = $current_user_can;
+		}
 	}
 
 	return $buddyforms_user_can;
 }
 
-function buddyforms_pig_current_user_can_edit($current_user_can){
+function buddyforms_pig_current_user_can_edit( $current_user_can ) {
+	global $groups_template;
+	if ( function_exists( 'groups_get_groupmeta' ) && ! empty( $groups_template ) ) {
+		$group_id = bp_get_group_id();
+		if ( ! empty( $group_id ) ) {
+			$settings = groups_get_groupmeta( $group_id, '_buddyforms_pig' );
 
-	$settings = groups_get_groupmeta( bp_get_group_id(), '_buddyforms_pig' );
+			$current_user_can = empty( $settings['edit'] ) ? false : true;
 
-	$current_user_can =  empty( $settings['edit'] ) ? false : true;
-
-	if ( get_the_author_meta( 'ID' ) == get_current_user_id() ) {
-		$current_user_can =  true;
+			if ( get_the_author_meta( 'ID' ) == get_current_user_id() ) {
+				$current_user_can = true;
+			}
+		}
 	}
 
-    return $current_user_can;
+	return $current_user_can;
 }

@@ -53,7 +53,7 @@ function buddyforms_pig_init() {
 
 	$buddyforms_pig = get_option( 'buddyforms_pig_options' );
 
-	if ( $buddyforms_pig['permission'] != 'disabled' ) {
+	if ( $buddyforms_pig['permission'] != 'disabled' && function_exists('bp_register_group_extension') ) {
 		require( dirname( __FILE__ ) . '/includes/buddyforms-post-in-groups.php' );
 		bp_register_group_extension( 'BuddyForms_Post_in_Groups' );
 	}
