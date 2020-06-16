@@ -3,8 +3,8 @@
  * Plugin Name: BuddyForms Posts in Groups
  * Plugin URI: http://buddyforms.com/downloads/buddyforms-posts-in-groups/
  * Description: BuddyForms Posts in Groups
- * Version: 1.0.1
- * Author: svenl77, buddyforms
+ * Version: 1.0.2
+ * Author: svenl77, buddyforms, gfirem
  * Author URI: https://profiles.wordpress.org/svenl77
  * Licence: GPLv3
  * Network: false
@@ -32,7 +32,7 @@
 
 function buddyforms_post_in_groups_load_constants() {
 
-	define( 'BUDDYFORMS_PIG', '1.0.1' );
+	define( 'BUDDYFORMS_PIG', '1.0.2' );
 
 	if ( ! defined( 'BUDDYFORMS_PIG_INSTALL_PATH' ) ) {
 		define( 'BUDDYFORMS_PIG_INSTALL_PATH', dirname( __FILE__ ) . '/' );
