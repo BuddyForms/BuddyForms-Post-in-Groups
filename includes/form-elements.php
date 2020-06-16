@@ -53,8 +53,6 @@ function buddyforms_buddypress_post_in_groups_form_builder_form_elements( $form_
 			$form_fields['general']['order'] = new Element_Hidden( "buddyforms_options[form_fields][" . $field_id . "][order]", $field_position, array( 'id' => 'buddyforms/' . $form_slug . '/form_fields/' . $field_id . '/order' ) );
 
 
-
-
 			break;
 		case 'group_post_author':
 			unset( $form_fields );
@@ -108,7 +106,7 @@ function buddyforms_buddypress_post_in_groups_frontend_form_elements( $form, $fo
 
 				while ( bp_groups() ) : bp_the_group();
 
-					$groups_array[  bp_get_group_id() ] = bp_get_group_name();
+					$groups_array[ bp_get_group_id() ] = bp_get_group_name();
 
 				endwhile;
 
@@ -174,6 +172,27 @@ function buddyforms_buddypress_post_in_groups_frontend_form_elements( $form, $fo
 	return $form;
 }
 
+/**
+ * Added a hidden field to pass the group id as parameter
+ *
+ * @param Form $form
+ * @param $args
+ *
+ * @return mixed
+ */
+function buddyforms_pig_form_before_render( $form, $args ) {
+	$buddyforms_pig = get_option( 'buddyforms_pig_options' );
+	if ( empty( $buddyforms_pig ) ) {
+		return $form;
+	}
+
+	$form->addElement( new Element_Hidden( 'buddyforms_pig_group_id', bp_get_current_group_id() ) );
+
+	return $form;
+}
+
+add_filter( 'buddyforms_form_before_render', 'buddyforms_pig_form_before_render', 10, 2 );
+
 
 /*
  * Save Fields
@@ -193,7 +212,7 @@ function buddyforms_buddypress_post_in_groups_update_post_meta( $customfield, $p
 			return;
 		}
 
-		$arg         = array(
+		$arg = array(
 			'ID'          => $post_id,
 			'post_author' => $_POST['buddyforms_buddypress_group'],
 		);

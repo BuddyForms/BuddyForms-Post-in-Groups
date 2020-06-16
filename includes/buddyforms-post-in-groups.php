@@ -3,7 +3,7 @@
  * The class_exists() check is recommended, to prevent problems during upgrade
  * or when the Groups component is disabled
  */
-if ( class_exists( 'BP_Group_Extension' ) ) :
+if ( class_exists( 'BP_Group_Extension' ) ) {
 	class BuddyForms_Post_in_Groups extends BP_Group_Extension {
 		/**
 		 * Here you can see more customization of the config options
@@ -20,7 +20,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 
 			$form_slug = $this->post_in_group_form_slug;
 
-			$name = isset($buddyforms[ $form_slug ]['name']) ? $buddyforms[ $form_slug ]['name'] : '';
+			$name = isset( $buddyforms[ $form_slug ]['name'] ) ? $buddyforms[ $form_slug ]['name'] : '';
 
 			if ( isset( $this->buddyforms_pig['create'] ) ) {
 				switch ( $this->buddyforms_pig['create'] ) {
@@ -50,43 +50,19 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 
 			switch ( $buddyforms_pig['permission'] ) {
 				case 'all':
-					add_action( 'bp_after_group_settings_admin', array(
-						$this,
-						'bp_pig_after_group_manage_members_admin'
-					), 1, 1 );
-					add_action( 'groups_group_settings_edited', array(
-						$this,
-						'bf_pig_groups_group_settings_edited'
-					), 10, 1 );
-					add_action( 'bp_after_group_settings_creation_step', array(
-						$this,
-						'bp_pig_after_group_manage_members_admin'
-					), 1, 1 );
-					add_action( 'groups_create_group_step_save_group-settings', array(
-						$this,
-						'bf_pig_groups_group_settings_edited'
-					), 10, 1 );
+					add_action( 'bp_after_group_settings_admin', array( $this, 'bp_pig_after_group_manage_members_admin' ), 1, 1 );
+					add_action( 'groups_group_settings_edited', array( $this, 'bf_pig_groups_group_settings_edited' ), 10, 1 );
+					add_action( 'bp_after_group_settings_creation_step', array( $this, 'bp_pig_after_group_manage_members_admin' ), 1, 1 );
+					add_action( 'groups_create_group_step_save_group-settings', array( $this, 'bf_pig_groups_group_settings_edited' ), 10, 1 );
 					break;
 				case 'group-admin':
-					add_action( 'bp_after_group_settings_admin', array(
-						$this,
-						'bp_pig_after_group_manage_members_admin'
-					), 1, 1 );
-					add_action( 'groups_group_settings_edited', array(
-						$this,
-						'bf_pig_groups_group_settings_edited'
-					), 10, 1 );
+					add_action( 'bp_after_group_settings_admin', array( $this, 'bp_pig_after_group_manage_members_admin' ), 1, 1 );
+					add_action( 'groups_group_settings_edited', array( $this, 'bf_pig_groups_group_settings_edited' ), 10, 1 );
 					break;
 				case 'admin':
 					if ( is_super_admin() ) {
-						add_action( 'bp_after_group_settings_admin', array(
-							$this,
-							'bp_pig_after_group_manage_members_admin'
-						), 1, 1 );
-						add_action( 'groups_group_settings_edited', array(
-							$this,
-							'bf_pig_groups_group_settings_edited'
-						), 10, 1 );
+						add_action( 'bp_after_group_settings_admin', array( $this, 'bp_pig_after_group_manage_members_admin' ), 1, 1 );
+						add_action( 'groups_group_settings_edited', array( $this, 'bf_pig_groups_group_settings_edited' ), 10, 1 );
 					}
 					break;
 			}
@@ -121,11 +97,11 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 			$form_slug = groups_get_groupmeta( $group_id, '_bf_pig_form_slug' ); ?>
 
 			<h4><?php _e( 'Post in Group Options', 'buddyforms' ) ?></h4>
-            <style>
-                td, th{
-                    padding:10px !important;
-                }
-            </style>
+			<style>
+				td, th {
+					padding: 10px !important;
+				}
+			</style>
 			<p><?php _e( 'Select the forms you like to integrate: ', 'buddyforms' ) ?>
 
 				<select name="_bf_pig_form_slug">
@@ -204,8 +180,6 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 			<p>Please Note: The Post Author and Admin will always have all rights to edit or delete a post.</p>
 
 
-
-
 			<?php
 
 
@@ -213,32 +187,32 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 
 
 			?>
-            <br>
-            <p>Filter the post list</p>
+			<br>
+			<p>Filter the post list</p>
 
-            <table class="_buddyforms_pig-options">
-                <tr>
-                    <td style="padding:10px" class="groups-label">
-                        <label
-                                for="_buddyforms_pig-can-create"><?php _e( 'View posts from: ', 'buddyforms' ) ?></label>
-                    </td>
+			<table class="_buddyforms_pig-options">
+				<tr>
+					<td style="padding:10px" class="groups-label">
+						<label
+							for="_buddyforms_pig-can-create"><?php _e( 'View posts from: ', 'buddyforms' ) ?></label>
+					</td>
 
-                    <td style="padding:10px">
-                        <select name="_buddyforms_pig[view]" id="_buddyforms_pig-view">
-                            <option value="post_type" <?php selected( $view, 'post_type' ) ?> />
+					<td style="padding:10px">
+						<select name="_buddyforms_pig[view]" id="_buddyforms_pig-view">
+							<option value="post_type" <?php selected( $view, 'post_type' ) ?> />
 							<?php _e( 'Post Type', 'buddyforms' ) ?></option>
-                            <option value="group_members" <?php selected( $view, 'group_members' ) ?> />
+							<option value="group_members" <?php selected( $view, 'group_members' ) ?> />
 							<?php _e( 'Group Members', 'buddyforms' ) ?></option>
-                            <option value="form" <?php selected( $view, 'form' ) ?> />
-	                        <?php _e( 'Form Submissions', 'buddyforms' ) ?></option>
-                            <option value="assigned" <?php selected( $view, 'assigned' ) ?> />
-	                        <?php _e( 'Assigned Group', 'buddyforms' ) ?></option>
-                        </select>
-                    </td>
-                </tr>
+							<option value="form" <?php selected( $view, 'form' ) ?> />
+							<?php _e( 'Form Submissions', 'buddyforms' ) ?></option>
+							<option value="assigned" <?php selected( $view, 'assigned' ) ?> />
+							<?php _e( 'Assigned Group', 'buddyforms' ) ?></option>
+						</select>
+					</td>
+				</tr>
 
-            </table>
-            <br><br><br>
+			</table>
+			<br><br><br>
 
 			<?php
 		}
@@ -260,4 +234,4 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 			}
 		}
 	}
-endif;
+}

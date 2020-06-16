@@ -43,7 +43,7 @@ function buddyforms_pig_settings_page_tab( $tab ) {
 							<option <?php echo selected( $buddyforms_pig['permission'], 'all', true ) ?>
 								value="all">All ( During Group Creation )
 							</option>
-							<option <?php echo selected( $buddyforms_pig['permission'], 'admin', true ) ?>
+							<option <?php echo selected( $buddyforms_pig['permission'], 'group-admin', true ) ?>
 								value="group-admin">Group Admins ( Only for existing Groups )
 							</option>
 							<option <?php echo selected( $buddyforms_pig['permission'], 'admin', true ) ?>

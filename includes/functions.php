@@ -27,7 +27,7 @@ function buddyforms_pig_the_loop_actions( $post_id ) {
 	}
 
 	global $groups_template;
-	if ( !function_exists( 'groups_get_groupmeta' ) || empty($groups_template) ) {
+	if ( ! function_exists( 'groups_get_groupmeta' ) || empty( $groups_template ) ) {
 		return;
 	}
 
@@ -141,7 +141,7 @@ function buddyforms_pig_the_loop_meta_html( $meta_tmp ) {
 	}
 
 	global $groups_template;
-	if ( !function_exists( 'groups_get_groupmeta' ) || empty($groups_template) ) {
+	if ( ! function_exists( 'groups_get_groupmeta' ) || empty( $groups_template ) ) {
 		return $meta_tmp;
 	}
 
@@ -162,7 +162,7 @@ function buddyforms_pig_user_can_delete( $user_can_delete ) {
 	}
 
 	global $groups_template;
-	if ( !function_exists( 'groups_get_groupmeta' ) || empty($groups_template) ) {
+	if ( ! function_exists( 'groups_get_groupmeta' ) || empty( $groups_template ) ) {
 		return $user_can_delete;
 	}
 
@@ -218,7 +218,7 @@ function bf_pig_loop_edit_post_link( $link, $post_id ) {
 	}
 
 	global $groups_template;
-	if ( !function_exists( 'groups_get_groupmeta' ) || empty($groups_template) ) {
+	if ( ! function_exists( 'groups_get_groupmeta' ) || empty( $groups_template ) ) {
 		return $link;
 	}
 
@@ -259,26 +259,34 @@ function bf_pig_loop_edit_post_link( $link, $post_id ) {
 	return $link;
 }
 
-//add_filter('bf_loop_edit_post_link', 'bf_pig_loop_edit_post_link', 99999, 2);
+add_filter( 'bf_loop_edit_post_link', 'bf_pig_loop_edit_post_link', 99999, 2 );
 
 
-//
-// Redirect to group single posts list, if form settup -> after submit is set to display posts list
-//
+/**
+ * Redirect to group single posts list, if form settup -> after submit is set to display posts list
+ *
+ * @param $permalink
+ *
+ * @return string
+ */
 function buddyforms_pig_after_save_post_redirect( $permalink ) {
 	global $buddyforms;
+
+	$form_slug = buddyforms_sanitize_slug( $_POST['form_slug'] );
+
+	if ( empty( $form_slug ) ) {
+		return $permalink;
+	}
 
 	if ( ! bp_is_group_single() ) {
 		return $permalink;
 	}
 
-	if ( isset( $buddyforms[ $_POST['form_slug'] ]['after_submit'] ) ) {
-		if ( $buddyforms[ $_POST['form_slug'] ]['after_submit'] == 'display_posts_list' ) {
-			$permalink = bp_get_group_permalink() . bp_current_action();
+	if ( isset( $buddyforms[ $form_slug ]['after_submit'] ) ) {
+		if ( $buddyforms[ $form_slug ]['after_submit'] == 'display_posts_list' ) {
+			$permalink = buddyforms_pig_get_url( '', $form_slug );
 		}
 	}
-
-//echo $permalink;
 
 	return $permalink;
 
@@ -329,4 +337,47 @@ function buddyforms_pig_current_user_can_edit( $current_user_can ) {
 	}
 
 	return $current_user_can;
+}
+
+function buddyforms_pig_create_submission_link( $default_link, $form_slug, $args ) {
+	global $groups_template;
+	if ( ! function_exists( 'groups_get_groupmeta' ) || empty( $groups_template ) ) {
+		return $default_link;
+	}
+
+	if ( empty( $form_slug ) ) {
+		return $default_link;
+	}
+
+	$buddyforms_pig = get_option( 'buddyforms_pig_options' );
+	if ( empty( $buddyforms_pig ) ) {
+		return $default_link;
+	}
+
+	$create_inside_group = buddyforms_pig_get_url( 'create', $form_slug );
+	if ( empty( $create_inside_group ) ) {
+		return $default_link;
+	}
+
+	return $create_inside_group;
+}
+
+add_filter( 'buddyforms_create_submission_link', 'buddyforms_pig_create_submission_link', 10, 3 );
+
+function buddyforms_pig_get_url( $action = '', $form_slug = '' ) {
+	$bp_action = bp_current_action();
+	if ( empty( $bp_action ) && ! empty( $form_slug ) ) {
+		$bp_action = $form_slug;
+	}
+	$group_permalink = bp_get_groups_directory_permalink();
+	$current_group   = groups_get_current_group();
+	if ( ! empty( $current_group ) ) {
+		$group_permalink .= $current_group->slug . '/';
+	}
+	$group_permalink .= $bp_action;
+	if ( ! empty( $action ) ) {
+		$group_permalink .= '/' . $action;
+	}
+
+	return esc_url_raw( $group_permalink );
 }
