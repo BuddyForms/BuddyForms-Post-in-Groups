@@ -131,10 +131,10 @@ switch ( $bp_action ) {
 			$query_args['author__in'] = array_keys( $group_members );
 		}
 
-		if ( isset( $list_posts_option ) && $list_posts_option == 'list_all' ) {
-			unset( $query_args['meta_key'] );
-			unset( $query_args['meta_value'] );
-		}
+//		if ( isset( $list_posts_option ) && $list_posts_option == 'list_all' ) {
+//			unset( $query_args['meta_key'] );
+//			unset( $query_args['meta_value'] );
+//		}
 
 		$bf_user_id = bp_loggedin_user_id();
 
