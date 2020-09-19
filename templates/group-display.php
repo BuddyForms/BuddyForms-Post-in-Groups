@@ -95,34 +95,14 @@ switch ( $bp_action ) {
 
 		$buddyforms_pig = groups_get_groupmeta( $group_id, '_buddyforms_pig' );
 
-
-        $meta = array(
-	        'key' => 'buddyforms_buddypress_group',
-	        'value' => $group_id,
-	        'compare' => '='
-        );
-
-		$meta_key = array(
-			'meta_query' => array(
-				'relation' => 'AND',
-				$meta
-			)
-		);
-
-
-
 		if ( isset( $buddyforms_pig['view'] ) && $buddyforms_pig['view'] == 'form' ) {
-			$meta[] = array(
-				'key' => '_bf_form_slug',
-				'value' => $form_slug,
-				'compare' => '='
-			);
+			$query_args['meta_key']   = '_bf_form_slug';
+			$query_args['meta_value'] = $form_slug;
 		}
-
-//		if ( isset( $buddyforms_pig['view'] ) && $buddyforms_pig['view'] == 'assigned' ) {
-//			$query_args['meta_key']   = '';
-//			$query_args['meta_value'] = ;
-//		}
+		if ( isset( $buddyforms_pig['view'] ) && $buddyforms_pig['view'] == 'assigned' ) {
+			$query_args['meta_key']   = 'buddyforms_buddypress_group';
+			$query_args['meta_value'] = $group_id;
+		}
 
 		if ( isset( $buddyforms_pig['view'] ) && $buddyforms_pig['view'] == 'group_members' ) {
 
@@ -161,11 +141,6 @@ switch ( $bp_action ) {
 		if ( $bf_user_id == $current_user->ID ) {
 			$query_args['post_status'] = array( 'publish', 'pending', 'draft' );
 		}
-
-
-		$query_args['meta_query'] = $meta_key;
-
-
 
 		$query_args   = apply_filters( 'bf_post_to_display_args', $query_args );
 		$the_lp_query = new WP_Query( $query_args );
