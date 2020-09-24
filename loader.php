@@ -74,6 +74,7 @@ add_action( 'bp_init', 'buddyforms_pig_init', 12 );
 
 function buddyforms_pig_admin_init() {
 	require( dirname( __FILE__ ) . '/includes/admin/admin.php' );
+	require( dirname( __FILE__ ) . '/includes/admin/metabox-select-group.php' );
 }
 
 add_action( 'admin_init', 'buddyforms_pig_admin_init' );
