@@ -100,23 +100,31 @@ function buddyforms_buddypress_post_in_groups_frontend_form_elements( $form, $fo
 	switch ( $customfield['type'] ) {
 		case 'group_select':
 
-//			$groups_array = array( 'all' => 'All Groups' );
+			$groups_array = array( 0 => __( 'None', 'buddyforms' ) );
 
-			if ( bp_has_groups() ) :
-
-				while ( bp_groups() ) : bp_the_group();
-
-					$groups_array[ bp_get_group_id() ] = bp_get_group_name();
-
-				endwhile;
-
-			endif;
-
+			// Post assigned group as a selector option.
+			$post_group_id = get_post_field( 'buddyforms_buddypress_group', $post_id ) ?: 0;
+			$post_group = groups_get_group(array( 'group_id' => $post_group_id ));
+			if ( isset( $post_group->id ) ) {
+				$groups_array[ $post_group->id ] = $post_group->name;
+			}
+			
+			$user_groups = groups_get_user_groups( get_current_user_id() );
+			if ( $user_groups['total'] > 0 ) {
+				foreach ( $user_groups['groups'] as $group_id ) {
+					$group = groups_get_group(array( 'group_id' => $group_id ));
+					if ( isset( $group->id ) ) {
+						$groups_array[ $group->id ] = $group->name;
+					}
+				}
+			}
+			
 			$label = __( 'Select a Group', 'buddyforms' );
 
-			$element_attr['class'] = $element_attr['class'] . ' bf-select2';
-			$element_attr['value'] = get_post_field( 'buddyforms_buddypress_group', $post_id );
-			$element_attr['id']    = 'group-post-authors';
+			$element_attr['class']     = $element_attr['class'] . ' bf-select2';
+			$element_attr['value']     = (int) $post_group_id;
+			$element_attr['id']        = 'group-post-authors';
+			$element_attr['shortDesc'] = '';
 
 
 			$element = new Element_Select( $label, 'buddyforms_buddypress_group', $groups_array, $element_attr );
