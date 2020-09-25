@@ -96,10 +96,10 @@ function buddyforms_save_group_selector_metadata( $post_id ) {
 
     /** OK, it's safe now */
     
-    $form_slug = sanitize_text_field( $_POST['buddyforms_buddypress_group'] );
+    $group_id = (int) $_POST['buddyforms_buddypress_group'];
 
     // Update the form slug for this post
-	update_post_meta( $post_id, 'buddyforms_buddypress_group', $form_slug );
+	update_post_meta( $post_id, 'buddyforms_buddypress_group', $group_id );
 
 	return $post_id;
 
