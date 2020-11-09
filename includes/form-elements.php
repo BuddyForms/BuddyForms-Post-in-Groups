@@ -181,52 +181,68 @@ function buddyforms_buddypress_post_in_groups_frontend_form_elements( $form, $fo
 }
 
 /**
- * Added a hidden field to pass the group id as parameter
- *
+ * Added a hidden field to pass the displayed group id 
+ * as a parameter if the group selector isn't set.
+ * 
  * @param Form $form
  * @param $args
  *
  * @return mixed
  */
-function buddyforms_pig_form_before_render( $form, $args ) {
-	$buddyforms_pig = get_option( 'buddyforms_pig_options' );
-	if ( empty( $buddyforms_pig ) ) {
+add_action( 'buddyforms_form_before_render', 'buddyforms_buddypress_post_in_groups_attach_displayed_group' );
+function buddyforms_buddypress_post_in_groups_attach_displayed_group( $form ) {
+	global $form_slug;
+
+	$pig_options = get_option( 'buddyforms_pig_options' );
+	$displayed_group = bp_get_current_group_id();
+
+	if ( ! $displayed_group ) {
 		return $form;
 	}
 
-	$form->addElement( new Element_Hidden( 'buddyforms_pig_group_id', bp_get_current_group_id() ) );
+	if ( isset( $pig_options['forms'] ) && in_array( $form_slug, $pig_options['forms'] ) ) {
+		$add_bp_group_element = true;
+		$_elements = $form->getElements();
+
+		foreach ($_elements as $element) {
+			if ( $element->getName() === 'buddyforms_buddypress_group' ) {
+				$add_bp_group_element = false;
+				break;
+			}
+		}
+
+		if ( $add_bp_group_element ) {
+			$form->addElement( new Element_Hidden( "buddyforms_buddypress_group", $displayed_group ) );
+		}
+
+	}
 
 	return $form;
-}
+}	
 
-add_filter( 'buddyforms_form_before_render', 'buddyforms_pig_form_before_render', 10, 2 );
-
-
-/*
- * Save Fields
- *
+/**
+ * Update bp group associate with the submitted entry
+ * 
+ * @param array $args
+ * @return void
  */
-add_action( 'buddyforms_update_post_meta', 'buddyforms_buddypress_post_in_groups_update_post_meta', 9999, 2 );
-function buddyforms_buddypress_post_in_groups_update_post_meta( $customfield, $post_id ) {
+add_action( 'buddyforms_process_submission_end', 'buddyforms_buddypress_post_in_groups_update_post_group' );
+function buddyforms_buddypress_post_in_groups_update_post_group( $args ) {
 
 	if ( ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 		return;
 	}
 
-	if ( $customfield['type'] == 'group_select' ) {
-
-
-		if ( ! isset( $_POST['buddyforms_buddypress_group'] ) ) {
-			return;
-		}
-
-		$arg = array(
-			'ID'          => $post_id,
-			'post_author' => $_POST['buddyforms_buddypress_group'],
-		);
-		update_post_meta( $post_id, 'buddyforms_buddypress_group', $_POST['buddyforms_buddypress_group'] );
-
+	if ( ! isset( $args['post_id'] ) ) {
+		return;
 	}
+
+	if ( ! isset( $_POST['buddyforms_buddypress_group'] ) || empty ( $_POST['buddyforms_buddypress_group'] ) ) {
+		return;
+	}
+
+	$bp_group = (int) $_POST['buddyforms_buddypress_group'];
+	update_post_meta( $args['post_id'], 'buddyforms_buddypress_group',  $bp_group );
 }
 
 add_action( 'buddyforms_process_submission_end', 'buddyforms_buddypress_group_post_author_process_submission_end' );
