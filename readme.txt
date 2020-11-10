@@ -4,7 +4,7 @@ Tags: buddypress, user, members, profiles, custom post types, taxonomy, frontend
 Plugin URI: http://buddyforms.com/downloads/post-in-groups/
 Requires at least: 4.0
 Tested up to: 5.5
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,6 +16,12 @@ This is the BuddyForms Post in Groups extension. You need the BuddyForms plugin 
 
 
 == Changelog ==
+= 1.0.4 - 10 November 2020 =
+* Fixed some wrong references on the code.
+* Fixed fallback to attach a BP group to entries during the submission if the form field group selector isn't there.
+* Fixed confusing variable name and wrong sanitize approach.
+* Added a group selector on the Post Editing Screen on the admin.
+* Fixed Group Selector form field that only loads one group (the current one). 
 
 = 1.0.3 - 16 Jun 2020 =
 * Fixed an issue where posts that are assigned to one group still appear in the list of posts for another group
