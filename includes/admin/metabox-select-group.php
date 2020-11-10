@@ -15,7 +15,7 @@ function buddyforms_add_groups_selector_metabox() {
 
 		$form = $buddyforms[$group_form];
 		add_meta_box(
-			'wporg_box_id',
+			'bf_post_in_groups_group_selector',
 			__( 'Group', 'buddyforms' ),
 			'buddyforms_group_selector_metabox_callback',
 			$form['post_type'],
@@ -98,7 +98,7 @@ function buddyforms_save_group_selector_metadata( $post_id ) {
     
     $group_id = (int) $_POST['buddyforms_buddypress_group'];
 
-    // Update the form slug for this post
+    // Update bp group assigned to the post
 	update_post_meta( $post_id, 'buddyforms_buddypress_group', $group_id );
 
 	return $post_id;
