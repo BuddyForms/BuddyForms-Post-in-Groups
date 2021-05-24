@@ -61,11 +61,13 @@ function buddyforms_pig_init() {
 
 	$buddyforms_pig = get_option( 'buddyforms_pig_options' );
 
-	if ( $buddyforms_pig['permission'] != 'disabled' ) {
+	if ( isset( $buddyforms_pig['permission'] ) && $buddyforms_pig['permission'] !== 'disabled' ) {
 		require( dirname( __FILE__ ) . '/includes/buddyforms-post-in-groups.php' );
-		$BuddyForms_Post_in_Groups = new BuddyForms_Post_in_Groups();
-		add_action( 'bp_actions', array( &$BuddyForms_Post_in_Groups, '_register' ), 8 );
-		add_action( 'admin_init', array( &$BuddyForms_Post_in_Groups, '_register' ) );
+		if ( class_exists( 'BuddyForms_Post_in_Groups' ) ) {
+			$BuddyForms_Post_in_Groups = new BuddyForms_Post_in_Groups();
+			add_action( 'bp_actions', array( &$BuddyForms_Post_in_Groups, '_register' ), 8 );
+			add_action( 'admin_init', array( &$BuddyForms_Post_in_Groups, '_register' ) );			
+		}
 	}
 
 }
