@@ -87,7 +87,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) {
 				return;
 			}
 
-			$group_id = bp_get_group_id();
+			$group_id = bp_get_current_group_id();
 
 			if ( ! $group_id ) {
 				$group_id = $bp->groups->new_group_id;
@@ -233,5 +233,14 @@ if ( class_exists( 'BP_Group_Extension' ) ) {
 				groups_update_groupmeta( $group_id, '_buddyforms_pig', $settings );
 			}
 		}
+	}
+
+} else {
+	add_action( 'admin_notices', 'bf_pig_notice_group_commponent_is_disabled' );
+	function bf_pig_notice_group_commponent_is_disabled() {?>
+		<div class="notice notice-error">
+			<p><?php _e( 'BuddyForms Post In Groups need the Social Groups Component be enabled.', 'buddyforms' ); ?></p>
+		</div>
+		<?php
 	}
 }
